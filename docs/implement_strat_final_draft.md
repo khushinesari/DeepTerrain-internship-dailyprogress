@@ -115,9 +115,9 @@ project/
 ├── data/
 │
 ├── terrain_processing/
-│   ├── segmentation.py
+│   ├── Segmentation_of_map.py
 │   ├── masking.py
-│   ├── raycasting.py
+│   ├── camera_visibility_by_raycasting.py
 │
 ├── path_generation/
 │   ├── msmg.py
@@ -125,7 +125,7 @@ project/
 │
 ├── optimization/
 │   ├── scoring.py
-│   ├── greedy_optimizer.py
+│   ├── greedy_optim.py
 │
 ├── analytics/
 │   ├── heatmap.py
