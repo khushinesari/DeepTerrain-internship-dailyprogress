@@ -54,63 +54,35 @@ CrewAI is responsible for:
 # Complete Workflow
 
 ```text
-Point Cloud / DEM
-        ↓
-
+Terrain Map
+ ↓
 Ground & Obstacle Segmentation
-        ↓
-
-Terrain Mask
-Obstacle Mask
-        ↓
-
-Valid Pole Generation
-        ↓
-
-Visibility Analysis
-(Raycasting)
-        ↓
-
-FoV Mask
-Coverage Maps
-        ↓
-
-Route Generation
-(MSMG / Multi-A*)
-        ↓
-
-Generated Intrusion Routes
-        ↓
-
-Terrain Intelligence Agent
-(Non-LLM)
-        ↓
-
-Route Statistics
-Heatmaps
-Bottleneck Analysis
-        ↓
-
-Camera Placement Strategy Agent
-(LLM)
-        ↓
-
-Scoring Weight Updates
-        ↓
-
-Greedy Camera Optimizer
-        ↓
-
-Best Camera Placement
-        ↓
-
+↓
+ Terrain Mask Obstacle Mask
+↓
+Start Band Goal Band
+↓
+Generate Top-K Feasible Routes (Multi-A* / MSMG / KSP)
+ ↓
+Terrain Intelligence Agent (Non-LLM)
+↓
+Route Heatmap Corridor Usage Bottleneck Detection Coverage Statistics
+ ↓
+Compact Summary
+↓
+Camera Placement Strategy Agent (Qwen3 / GPT-4o Mini)
+ ↓
+Weight Updates coverage_weight route_weight bottleneck_weight
+ ↓
+ Greedy Camera Optimizer ↓ Best Camera Placement
+↓
 Update Visibility
-        ↓
-
-Generate New Routes
-        ↓
-
-Repeat
+↓
+Update Coverage
+↓
+ Generate New Routes
+↓
+Repeat Until: Coverage ≥ Threshold OR Routes Remaining ≤ Threshold OR Camera Budget Exhausted
 ```
 
 ---
@@ -199,41 +171,73 @@ The result indicates how much terrain can be observed from each candidate locati
 
 # Phase 4: Route Generation
 
-The intrusion planning layer generates possible routes.
+The intrusion planning layer generates a diverse set of feasible intrusion routes between a user-defined start band and goal band.
+
+Inputs:
+
+Terrain Mask
+Obstacle Mask
+Start Band
+Goal Band
+
+Route generation constraints:
+
+Routes must remain on valid terrain.
+Routes cannot pass through obstacles.
+Routes must connect the start band to the goal band.
+Multiple feasible routes should be generated to capture different intrusion possibilities.
+
+The objective is not to generate every possible route, but rather a representative set of important feasible routes.
 
 Possible algorithms:
 
-* MSMG
-* Multi-A*
-* K-Shortest Paths
+Multi-A*
+MSMG
+K-Shortest Paths
 
 Example:
 
-```text
 Route 1
 Route 2
 Route 3
 ...
-Route 100
-```
+Route N
 
-Each route represents a potential intruder path through the terrain.
+These routes represent potential intrusion opportunities under the current environment configuration.
 
 ---
 
 # Terrain Intelligence Agent (Agent 1)
 
-## Type
+##Type
 
 Non-LLM Agent
 
 ## Purpose
 
-Transform large numbers of generated routes into meaningful statistics.
+Transform large numbers of generated intrusion routes into compact statistical summaries that can be analyzed by the Camera Placement Strategy Agent.
 
-The agent uses existing Python code and analytical functions.
+The Terrain Intelligence Agent does not use an LLM.
 
-No LLM calls are required.
+Instead, it uses existing Python-based analytics.
+
+##Inputs
+
+The agent receives:
+
+Generated Routes
+Coverage Statistics
+Current Environment State
+
+##Example:
+
+Route 1
+Route 2
+Route 3
+...
+Route N
+
+These routes are generated between the start band and goal band and represent feasible intrusion paths that avoid terrain constraints.
 
 ---
 
@@ -355,7 +359,36 @@ This converts:
         ↓
 1 Statistical Summary
 ```
+## Corridor Analysis
 
+For the initial implementation, the terrain is divided into:
+
+WEST | CENTER | EAST
+
+Each generated route is assigned to a corridor using its average horizontal position.
+
+This provides a lightweight summary of route distribution without sending route coordinates to the LLM.
+
+Example:
+
+{
+  "west_corridor_usage": 72,
+  "center_corridor_usage": 18,
+  "east_corridor_usage": 10
+}
+## Bottleneck Detection
+
+Bottlenecks are locations repeatedly used by large numbers of routes.
+
+Example:
+
+84 routes
+      ↓
+Single Valley
+
+This location becomes a high-priority bottleneck.
+
+The agent identifies the highest traffic cells from the route heatmap and reports them as candidate bottlenecks.
 ---
 
 # Camera Placement Strategy Agent (Agent 2)
