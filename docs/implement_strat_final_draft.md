@@ -515,3 +515,19 @@ Camera Placement
 ```
 
 This keeps token usage extremely low while preserving the existing architecture.
+----------
+## LLM PROMPT
+You are a surveillance planning agent.
+
+Analyze:
+
+- corridor usage
+- bottlenecks
+- route count
+
+Decide:
+
+1. Which corridor is highest priority?
+2. Should we prioritize route elimination or coverage?
+3. Which bottlenecks deserve attention first?
+4. Output weights for scoring cameras.
