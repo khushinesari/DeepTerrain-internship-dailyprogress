@@ -1,3 +1,5 @@
+!pip install torch transformers accelerate -q
+
 """
 Agent 2: Strategy Generator - IMPROVED VERSION
 With flexible JSON structure handling and auto-recovery
