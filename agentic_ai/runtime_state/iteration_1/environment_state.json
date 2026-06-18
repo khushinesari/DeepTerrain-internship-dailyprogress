@@ -1,0 +1,9 @@
+{
+  "iteration": 1,
+  "placed_cameras": 1,
+  "routes_before": 360,
+  "routes_removed": 236,
+  "routes_remaining": 124,
+  "coverage_percent": 1.59,
+  "blind_spot_percent": 98.41
+}
