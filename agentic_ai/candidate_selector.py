@@ -41,19 +41,55 @@ with open(
 
     strategy_json = json.load(f)
 
-top_bottlenecks = strategy_json[
-    "input_summary"
+raw_bottlenecks = strategy_json[
+    "strategy"
 ][
-    "top_bottlenecks"
-][:TOP_BOTTLENECKS]
+    "priority_bottlenecks"
+]
 
 priority_grids = []
 
-for b in top_bottlenecks:
+for item in raw_bottlenecks:
 
-    priority_grids.append(
-        b["grid"]
-    )
+    # Case 1:
+    # "5_7"
+    if isinstance(item, str):
+
+        priority_grids.append(item)
+
+    # Case 2:
+    # {"location":"(5, 7)", ...}
+    elif isinstance(item, dict):
+
+        if "grid" in item:
+
+            priority_grids.append(
+                item["grid"]
+            )
+
+        elif "location" in item:
+
+            loc = item[
+                "location"
+            ]
+
+            loc = (
+                loc.replace("(", "")
+                   .replace(")", "")
+                   .replace(" ", "")
+            )
+
+            row, col = loc.split(",")
+
+            priority_grids.append(
+                f"{row}_{col}"
+            )
+
+print("\nPriority Grids:")
+
+for g in priority_grids:
+
+    print(" ", g)
 
 print("\nPriority Grids:")
 

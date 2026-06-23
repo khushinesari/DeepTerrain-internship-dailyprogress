@@ -12,8 +12,14 @@ CANDIDATE_POLES_JSON = r"C:\Users\KHUSHI\Documents\deepterrain_internship\polepl
 
 STRATEGY_JSON = r"C:\Users\KHUSHI\Documents\deepterrain_internship\poleplacement_codes\DeepTerrain\agentic_ai\agent2_output\strategy.json"
 
-SUMMARY_JSON = r"C:\Users\KHUSHI\Documents\deepterrain_internship\poleplacement_codes\DeepTerrain\agentic_ai\terrain_intelligence_output\summary.json"
-
+SUMMARY_DIR = (
+    r"C:\Users\KHUSHI\Documents"
+    r"\deepterrain_internship"
+    r"\poleplacement_codes"
+    r"\DeepTerrain"
+    r"\agentic_ai"
+    r"\terrain_intelligence_output"
+)
 OUT_DIR = r"C:\Users\KHUSHI\Documents\deepterrain_internship\poleplacement_codes\DeepTerrain\agentic_ai\camera_scoring_output"
 
 os.makedirs(
@@ -21,6 +27,63 @@ os.makedirs(
     exist_ok=True
 )
 
+# ==========================================================
+# FIND LATEST SUMMARY FILE
+# ==========================================================
+
+def get_latest_summary_file(summary_dir):
+
+    summary_iters = []
+
+    for file in os.listdir(summary_dir):
+
+        if (
+            file.startswith("summary_iter_")
+            and file.endswith(".json")
+        ):
+
+            try:
+
+                iteration = int(
+                    file.replace(
+                        "summary_iter_",
+                        ""
+                    ).replace(
+                        ".json",
+                        ""
+                    )
+                )
+
+                summary_iters.append(
+                    (iteration, file)
+                )
+
+            except:
+                pass
+
+    if len(summary_iters) == 0:
+
+        raise FileNotFoundError(
+            "No summary_iter_*.json files found."
+        )
+
+    summary_iters.sort(
+        key=lambda x: x[0]
+    )
+
+    latest_file = summary_iters[-1][1]
+
+    latest_path = os.path.join(
+        summary_dir,
+        latest_file
+    )
+
+    print(
+        f"\nUsing Summary File: "
+        f"{latest_file}"
+    )
+
+    return latest_path
 # ==========================================================
 # LOAD FILES
 # ==========================================================
@@ -42,6 +105,10 @@ with open(
 ) as f:
 
     strategy = json.load(f)
+
+SUMMARY_JSON = get_latest_summary_file(
+    SUMMARY_DIR
+)
 
 with open(
     SUMMARY_JSON,
@@ -72,21 +139,47 @@ print(
 )
 
 # ==========================================================
-# BOTTLENECK FREQUENCIES
+# LLM PRIORITY BOTTLENECKS
 # ==========================================================
 
 bottleneck_freq = {}
 
-for b in summary["top_bottlenecks"]:
+priority_bottlenecks = strategy[
+    "strategy"
+][
+    "priority_bottlenecks"
+]
+
+for b in priority_bottlenecks:
+
+    location = b["location"]
+
+    location = (
+        location
+        .replace("(", "")
+        .replace(")", "")
+        .replace(" ", "")
+    )
+
+    row, col = location.split(",")
+
+    grid_id = f"{row}_{col}"
 
     bottleneck_freq[
-        b["grid"]
+        grid_id
     ] = b["frequency"]
+
+print("\nLLM Priority Bottlenecks:")
+
+for k, v in bottleneck_freq.items():
+
+    print(
+        f"{k} -> {v}"
+    )
 
 max_freq = max(
     bottleneck_freq.values()
 )
-
 # ==========================================================
 # SCORE POLES
 # ==========================================================
@@ -99,7 +192,7 @@ for pole in candidate_poles:
 
     freq = bottleneck_freq.get(
         grid,
-        1
+        0
     )
 
     # ------------------------------------------
@@ -294,3 +387,7 @@ print(
 print("\n" + "=" * 60)
 print("CAMERA SCORING COMPLETE")
 print("=" * 60)
+print(set(
+    pole["grid"]
+    for pole in candidate_poles
+))

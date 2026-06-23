@@ -7,10 +7,101 @@ import numpy as np
 import matplotlib.pyplot as plt
 from collections import Counter
 
+# ==========================================================
 # CONFIG
+# ==========================================================
 
-PATH_JSON = r"C:\Users\KHUSHI\Documents\deepterrain_internship\poleplacement_codes\DeepTerrain\Static_scripts\step4\output\multi_astar_v2\paths_1.json"
+# ==========================================================
+# AUTO DETECT CURRENT ROUTE FILE
+# ==========================================================
 
+import os
+import json
+
+# ==========================================================
+# AUTO DETECT CURRENT ROUTE FILE
+# ==========================================================
+
+ORIGINAL_PATHS = (
+    r"C:\Users\KHUSHI\Documents"
+    r"\deepterrain_internship"
+    r"\poleplacement_codes"
+    r"\DeepTerrain"
+    r"\agentic_ai"
+    r"\multi_astar_v2"
+    r"\paths_1.json"
+)
+
+RUNTIME_DIR = (
+    r"C:\Users\KHUSHI\Documents"
+    r"\deepterrain_internship"
+    r"\poleplacement_codes"
+    r"\DeepTerrain"
+    r"\agentic_ai"
+    r"\runtime_state"
+)
+
+PATH_JSON = ORIGINAL_PATHS
+
+# ----------------------------------------------------------
+# Iteration 0
+#
+# Use:
+# paths_1.json
+#
+# Later:
+#
+# paths_iter_1.json
+# paths_iter_2.json
+# ...
+# ----------------------------------------------------------
+
+if os.path.exists(RUNTIME_DIR):
+
+    route_iterations = []
+
+    for file in os.listdir(RUNTIME_DIR):
+
+        if (
+            file.startswith("paths_iter_")
+            and
+            file.endswith(".json")
+        ):
+
+            try:
+
+                idx = int(
+                    file.replace(
+                        "paths_iter_",
+                        ""
+                    ).replace(
+                        ".json",
+                        ""
+                    )
+                )
+
+                route_iterations.append(
+                    (idx, file)
+                )
+
+            except:
+                pass
+
+    if len(route_iterations) > 0:
+
+        route_iterations.sort(
+            key=lambda x: x[0]
+        )
+
+        latest_file = route_iterations[-1][1]
+
+        PATH_JSON = os.path.join(
+            RUNTIME_DIR,
+            latest_file
+        )
+
+print("\nUsing Route File:")
+print(PATH_JSON)
 COVERAGE_STATS = r"C:\Users\KHUSHI\Documents\deepterrain_internship\poleplacement_codes\DeepTerrain\Static_scripts\step4\output\coverage_stats.txt"
 
 OUT_DIR = r"C:\Users\KHUSHI\Documents\deepterrain_internship\poleplacement_codes\DeepTerrain\agentic_ai\terrain_intelligence_output"
@@ -20,12 +111,36 @@ os.makedirs(OUT_DIR, exist_ok=True)
 GRID_ROWS = 10
 GRID_COLS = 10
 
+# ==========================================================
+# ITERATION DETECTION
+# ==========================================================
+
 ITERATION = 0
-# later:
-# ITERATION = 1,2,3...
 
+if "paths_iter_" in os.path.basename(PATH_JSON):
 
+    ITERATION = int(
+
+        os.path.basename(PATH_JSON)
+
+        .replace(
+            "paths_iter_",
+            ""
+        )
+
+        .replace(
+            ".json",
+            ""
+        )
+    )
+
+else:
+
+    ITERATION = 0
+
+# ==========================================================
 # LOAD ROUTES
+# ==========================================================
 
 print("\n" + "="*60)
 print("TERRAIN INTELLIGENCE AGENT")
@@ -39,7 +154,9 @@ if len(routes) == 0:
 
 print(f"Routes Loaded : {len(routes)}")
 
+# ==========================================================
 # MAP SIZE
+# ==========================================================
 
 max_r = 0
 max_c = 0
@@ -57,10 +174,57 @@ W = max_c + 1
 print(f"Map Height : {H}")
 print(f"Map Width  : {W}")
 
+# ==========================================================
 # GRID BOTTLENECK ANALYSIS
+# ==========================================================
 
 grid_h = H // GRID_ROWS + 1
 grid_w = W // GRID_COLS + 1
+
+# ==========================================================
+# GRID METADATA
+# ==========================================================
+
+grid_metadata = {}
+
+for gr in range(GRID_ROWS):
+
+    for gc in range(GRID_COLS):
+
+        row_start = gr * grid_h
+        row_end = min(
+            (gr + 1) * grid_h - 1,
+            H - 1
+        )
+
+        col_start = gc * grid_w
+        col_end = min(
+            (gc + 1) * grid_w - 1,
+            W - 1
+        )
+
+        grid_metadata[
+            f"{gr}_{gc}"
+        ] = {
+
+            "grid_row":
+                int(gr),
+
+            "grid_col":
+                int(gc),
+
+            "row_start":
+                int(row_start),
+
+            "row_end":
+                int(row_end),
+
+            "col_start":
+                int(col_start),
+
+            "col_end":
+                int(col_end)
+        }
 
 grid_counter = Counter()
 
@@ -92,7 +256,9 @@ for (gr, gc), freq in grid_counter.items():
     ):
         heatmap[gr, gc] = freq
 
+# ==========================================================
 # SAVE GRID HEATMAP
+# ==========================================================
 
 plt.figure(figsize=(8,8))
 
@@ -112,14 +278,16 @@ plt.title(
 plt.savefig(
     os.path.join(
         OUT_DIR,
-        "grid_heatmap.png"
+        f"grid_heatmap_iter_{ITERATION}.png"
     ),
     bbox_inches="tight"
 )
 
 plt.close()
 
+# ==========================================================
 # TOP BOTTLENECKS
+# ==========================================================
 
 top_grids = sorted(
     grid_counter.items(),
@@ -142,7 +310,9 @@ for (gr, gc), freq in top_grids:
         "frequency": int(freq)
     })
 
+# ==========================================================
 # CORRIDOR ANALYSIS
+# ==========================================================
 
 west_limit = W / 3
 east_limit = 2 * W / 3
@@ -188,7 +358,9 @@ east_pct = round(
     2
 )
 
+# ==========================================================
 # CORRIDOR HEATMAP
+# ==========================================================
 
 corridor_heatmap = np.array([
     [
@@ -224,18 +396,40 @@ plt.title(
 plt.savefig(
     os.path.join(
         OUT_DIR,
-        "corridor_heatmap.png"
+        f"corridor_heatmap_iter_{ITERATION}.png"
     ),
     bbox_inches="tight"
 )
 
 plt.close()
 
+# ==========================================================
 # SUMMARY
+# ==========================================================
+
+PLACED_CAMERAS_JSON = os.path.join(
+    RUNTIME_DIR,
+    "placed_cameras.json"
+)
+
+placed_cameras = 0
+
+if os.path.exists(PLACED_CAMERAS_JSON):
+
+    with open(
+        PLACED_CAMERAS_JSON,
+        "r"
+    ) as f:
+
+        placed_cameras = len(
+            json.load(f)
+        )
 
 summary = {
 
     "iteration": ITERATION,
+
+    "placed_cameras": placed_cameras,
 
     "routes_remaining":
         int(len(routes)),
@@ -252,8 +446,9 @@ summary = {
     "top_bottlenecks":
         bottlenecks
 }
-
+# ==========================================================
 # ADD COVERAGE IF AVAILABLE
+# ==========================================================
 
 if ITERATION > 0 and os.path.exists(COVERAGE_STATS):
 
@@ -290,13 +485,14 @@ if ITERATION > 0 and os.path.exists(COVERAGE_STATS):
             blind_match.group(1)
         )
 
+# ==========================================================
 # SAVE SUMMARY
+# ==========================================================
 
 summary_path = os.path.join(
     OUT_DIR,
-    "summary.json"
+    f"summary_iter_{ITERATION}.json"
 )
-
 with open(summary_path, "w") as f:
 
     json.dump(
@@ -306,6 +502,29 @@ with open(summary_path, "w") as f:
     )
 
 print("\nSaved summary.json")
+# ==========================================================
+# SAVE GRID METADATA
+# ==========================================================
+
+grid_metadata_path = os.path.join(
+    OUT_DIR,
+    "grid_metadata.json"
+)
+
+with open(
+    grid_metadata_path,
+    "w"
+) as f:
+
+    json.dump(
+        grid_metadata,
+        f,
+        indent=2
+    )
+
+print(
+    "\nSaved grid_metadata.json"
+)
 
 print("\nSummary:\n")
 

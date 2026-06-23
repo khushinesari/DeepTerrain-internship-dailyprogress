@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 import os
 import json
 import numpy as np
@@ -9,15 +10,87 @@ import matplotlib.pyplot as plt
 # ==========================================================
 
 BEST_CAMERA_JSON = r"C:\Users\KHUSHI\Documents\deepterrain_internship\poleplacement_codes\DeepTerrain\agentic_ai\visibility_output\best_camera.json"
-CURRENT_ROUTES_JSON = r"C:\Users\KHUSHI\Documents\deepterrain_internship\poleplacement_codes\DeepTerrain\agentic_ai\multi_astar_v2\paths_1.json"
+
+#CURRENT_ROUTES_JSON = r"C:\Users\KHUSHI\Documents\deepterrain_internship\poleplacement_codes\DeepTerrain\agentic_ai\multi_astar_v2\paths_1.json"
 
 TERRAIN_MASK_PATH = r"C:\Users\KHUSHI\Documents\deepterrain_internship\poleplacement_codes\DeepTerrain\Static_scripts\step3\output\terrain_mask.npy"
+
 OBSTACLE_MASK_PATH = r"C:\Users\KHUSHI\Documents\deepterrain_internship\poleplacement_codes\DeepTerrain\Static_scripts\step3\output\obstacle_mask.npy"
 
-RUNTIME_DIR = r"C:\Users\KHUSHI\Documents\deepterrain_internship\poleplacement_codes\DeepTerrain\agentic_ai\runtime_state"
 
 MAX_RANGE = 150
 FOV_DEG = 30
+# ==========================================================
+# AUTO DETECT CURRENT ROUTE FILE
+# ==========================================================
+
+RUNTIME_DIR = (
+    r"C:\Users\KHUSHI\Documents"
+    r"\deepterrain_internship"
+    r"\poleplacement_codes"
+    r"\DeepTerrain"
+    r"\agentic_ai"
+    r"\runtime_state"
+)
+
+ORIGINAL_PATHS = (
+    r"C:\Users\KHUSHI\Documents"
+    r"\deepterrain_internship"
+    r"\poleplacement_codes"
+    r"\DeepTerrain"
+    r"\agentic_ai"
+    r"\multi_astar_v2"
+    r"\paths_1.json"
+)
+
+CURRENT_ROUTE_FILE = ORIGINAL_PATHS
+
+if os.path.exists(RUNTIME_DIR):
+
+    route_files = []
+
+    for file in os.listdir(RUNTIME_DIR):
+
+        if (
+            file.startswith("paths_iter_")
+            and
+            file.endswith(".json")
+        ):
+
+            try:
+
+                idx = int(
+                    file.replace(
+                        "paths_iter_",
+                        ""
+                    ).replace(
+                        ".json",
+                        ""
+                    )
+                )
+
+                route_files.append(
+                    (idx, file)
+                )
+
+            except:
+                pass
+
+    if len(route_files) > 0:
+
+        route_files.sort(
+            key=lambda x: x[0]
+        )
+
+        CURRENT_ROUTE_FILE = os.path.join(
+            RUNTIME_DIR,
+            route_files[-1][1]
+        )
+
+print(
+    f"\nUsing Route File:\n"
+    f"{CURRENT_ROUTE_FILE}"
+)
 
 # ==========================================================
 # HELPERS
@@ -73,16 +146,16 @@ H, W = terrain_mask.shape
 with open(BEST_CAMERA_JSON, "r") as f:
     best_camera = json.load(f)
 
-with open(CURRENT_ROUTES_JSON, "r") as f:
+with open(CURRENT_ROUTE_FILE, "r") as f:
     routes = json.load(f)
 
-fov_mask_path = os.path.join(RUNTIME_DIR, "fov_mask.npy")
+global_fov_path = os.path.join(RUNTIME_DIR, "global_fov_mask.npy")
 placed_cameras_path = os.path.join(RUNTIME_DIR, "placed_cameras.json")
 
-if os.path.exists(fov_mask_path):
-    runtime_fov_mask = np.load(fov_mask_path)
+if os.path.exists(global_fov_path):
+    global_fov_mask = np.load(global_fov_path)
 else:
-    runtime_fov_mask = np.zeros_like(terrain_mask, dtype=np.uint8)
+    global_fov_mask = np.zeros_like(terrain_mask, dtype=np.uint8)
 
 if os.path.exists(placed_cameras_path):
     with open(placed_cameras_path, "r") as f:
@@ -90,13 +163,17 @@ if os.path.exists(placed_cameras_path):
 else:
     placed_cameras = []
 
-camera_id = len(placed_cameras) + 1
+iteration = len(placed_cameras)
 
 iteration_dir = os.path.join(
     RUNTIME_DIR,
-    f"iteration_{camera_id}"
+    f"iteration_{iteration}"
 )
 os.makedirs(iteration_dir, exist_ok=True)
+
+# ==========================================================
+# BUILD CAMERA FOV
+# ==========================================================
 
 row = best_camera["bev_row"]
 col = best_camera["bev_col"]
@@ -114,20 +191,28 @@ camera_mask = build_fov_mask(
 np.save(
     os.path.join(
         iteration_dir,
-        f"camera_{camera_id}_mask.npy"
+        f"camera_{iteration}_mask.npy"
     ),
     camera_mask
 )
 
+# ==========================================================
+# UPDATE CAMERA HISTORY
+# ==========================================================
+
 camera_record = {
-    "camera_id": camera_id,
+    "iteration": iteration,
+    "camera_id": iteration + 1,
     "pole_id": best_camera["pole_id"],
     "bev_row": row,
     "bev_col": col,
     "azimuth": azimuth,
     "world_x": best_camera.get("world_x"),
     "world_y": best_camera.get("world_y"),
-    "world_z": best_camera.get("world_z")
+    "world_z": best_camera.get("world_z"),
+    "routes_intersected": best_camera.get("routes_intersected"),
+    "coverage_gain": best_camera.get("coverage_gain"),
+    "final_score": best_camera.get("final_score")
 }
 
 placed_cameras.append(camera_record)
@@ -135,22 +220,30 @@ placed_cameras.append(camera_record)
 with open(placed_cameras_path, "w") as f:
     json.dump(placed_cameras, f, indent=2)
 
-runtime_fov_mask = np.maximum(
-    runtime_fov_mask,
+# ==========================================================
+# UPDATE GLOBAL FOV
+# ==========================================================
+
+global_fov_mask = np.maximum(
+    global_fov_mask,
     camera_mask
 )
 
 np.save(
-    fov_mask_path,
-    runtime_fov_mask
+    global_fov_path,
+    global_fov_mask
 )
+
+# ==========================================================
+# DELETE ROUTES INTERSECTING CAMERA FOV
+# ==========================================================
 
 blocked_routes = []
 remaining_routes = []
 
 for route in routes:
 
-    visible = False
+    route_detected = False
 
     for r, c in route:
 
@@ -159,13 +252,15 @@ for route in routes:
             0 <= c < W and
             camera_mask[r, c]
         ):
-            visible = True
+            route_detected = True
             break
 
-    if visible:
+    if route_detected:
         blocked_routes.append(route)
     else:
         remaining_routes.append(route)
+
+# save audit copies
 
 with open(
     os.path.join(iteration_dir, "blocked_routes.json"),
@@ -179,8 +274,26 @@ with open(
 ) as f:
     json.dump(remaining_routes, f)
 
+# IMPORTANT:
+# this becomes input for next iteration
+
+next_routes_path = os.path.join(
+    RUNTIME_DIR,
+    f"paths_iter_{iteration + 1}.json"
+)
+
+with open(next_routes_path, "w") as f:
+    json.dump(
+        remaining_routes,
+        f
+    )
+
+# ==========================================================
+# ENVIRONMENT STATE
+# ==========================================================
+
 covered_cells = np.sum(
-    (runtime_fov_mask == 1) & (terrain_mask == 1)
+    (global_fov_mask == 1) & (terrain_mask == 1)
 )
 
 terrain_cells = np.sum(
@@ -193,7 +306,7 @@ coverage_percent = (
 )
 
 environment_state = {
-    "iteration": camera_id,
+    "iteration": iteration,
     "placed_cameras": len(placed_cameras),
     "routes_before": len(routes),
     "routes_removed": len(blocked_routes),
@@ -202,7 +315,8 @@ environment_state = {
     "blind_spot_percent": round(
         100 - coverage_percent,
         2
-    )
+    ),
+    "next_routes_file": next_routes_path
 }
 
 with open(
@@ -218,15 +332,25 @@ with open(
         indent=2
     )
 
+# ==========================================================
+# VISUALIZATION
+# ==========================================================
+
 img = np.zeros((H, W, 3), dtype=np.uint8)
 
 img[terrain_mask == 1] = [0, 255, 0]
 img[obstacle_mask == 1] = [255, 0, 0]
-img[runtime_fov_mask == 1] = [255, 255, 0]
 
+# all observed cells
+img[global_fov_mask == 1] = [255, 255, 0]
+
+# remaining routes only
 for route in remaining_routes:
+
     for r, c in route:
+
         if 0 <= r < H and 0 <= c < W:
+
             img[r, c] = [0, 0, 255]
 
 plt.figure(figsize=(14, 10))
@@ -250,20 +374,24 @@ for cam in placed_cameras:
     )
 
 plt.title(
-    f"Updated Environment Iteration {camera_id}"
+    f"Updated Environment Iteration {iteration}"
 )
 
 plt.axis("off")
 
+png_path = os.path.join(
+    iteration_dir,
+    f"updated_environment_iter_{iteration}.png"
+)
+
 plt.savefig(
-    os.path.join(
-        iteration_dir,
-        f"updated_environment_iter_{camera_id}.png"
-    ),
+    png_path,
     bbox_inches="tight"
 )
 
 plt.close()
 
-print("Environment update complete.")
-print(environment_state)
+print("\nEnvironment Update Complete\n")
+print(json.dumps(environment_state, indent=2))
+print(f"\nSaved next routes: {next_routes_path}")
+print(f"Saved visualization: {png_path}")

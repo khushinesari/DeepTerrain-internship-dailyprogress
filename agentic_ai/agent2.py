@@ -28,14 +28,16 @@ def setup_device():
 
 def load_qwen_model(device):
     """Load Qwen 2.5 3B Instruct model"""
+    HF_TOKEN = os.getenv("HF_TOKEN")
     print("\n Loading Qwen 2.5 3B Instruct model...")
 
     model_id = "Qwen/Qwen2.5-3B-Instruct"
 
     try:
-        tokenizer = AutoTokenizer.from_pretrained(model_id)
+        tokenizer = AutoTokenizer.from_pretrained(model_id,token=HF_TOKEN)
         model = AutoModelForCausalLM.from_pretrained(
             model_id,
+            token=HF_TOKEN,
             torch_dtype=torch.float16 if device.type == "cuda" else torch.float32,
             device_map="auto" if device.type == "cuda" else None
         )
@@ -105,34 +107,110 @@ def analyze_corridor_distribution(summary_data: Dict[str, Any]) -> Dict[str, Any
 # ============================================================================
 # LLM PROMPTING AND ANALYSIS
 # ============================================================================
-
-def create_analysis_prompt(summary_data: Dict[str, Any], corridor_analysis: Dict[str, Any]) -> str:
-    """Create detailed prompt for LLM analysis - STRICT JSON-ONLY OUTPUT (token-efficient)"""
+def create_analysis_prompt(summary_data, corridor_analysis):
 
     prompt = f"""
-Output ONLY valid JSON.
+You are a surveillance strategy planner.
+Your job is to analyze the route distribution and determine:
+1. Which corridor should be prioritized.
+2. Whether the next camera should focus on:
+   - route elimination
+   - coverage expansion
+3. Appropriate route and coverage weights.
 
-Data:
-routes={summary_data['routes_remaining']}
-west={summary_data['west_corridor_usage']}
-center={summary_data['center_corridor_usage']}
-east={summary_data['east_corridor_usage']}
-bottlenecks={json.dumps(corridor_analysis['bottleneck_hotspots'])}
+IMPORTANT:
 
-Return exactly:
+The weights MUST be derived from the input data.
+You MUST select the 5 most important bottlenecks
+for the next camera placement.
+
+Return them in:
+
+"priority_bottlenecks"
+
+ordered from highest priority to lowest priority.
+
+Use:
+
+- bottleneck frequency
+- corridor importance
+- strategy decision
+
+when choosing them.
+
+Guidelines:
+
+- If one corridor dominates (>60% usage):
+  prioritize route elimination.
+
+- If routes_remaining is very high:
+  increase route_weights.
+
+- If routes_remaining is low but coverage is poor:
+  increase coverage_weights.
+
+- route_weights + coverage_weights MUST equal 1.0
+
+- Do NOT always return 0.7 / 0.3.
+- Adjust weights according to the terrain summary.
+Priority corridor should primarily be determined from:
+ 1. The corridor containing the highest-frequency bottleneck.
+ 2. Corridor usage percentages.
+
+If the highest-frequency bottleneck lies in CENTER,
+CENTER should generally be prioritized.
+
+INPUT DATA
+
+routes_remaining = {summary_data['routes_remaining']}
+
+west_corridor_usage = {summary_data['west_corridor_usage']}
+
+center_corridor_usage = {summary_data['center_corridor_usage']}
+
+east_corridor_usage = {summary_data['east_corridor_usage']}
+
+top_bottlenecks =
+{json.dumps(corridor_analysis['bottleneck_hotspots'], indent=2)}
+
+Return ONLY valid JSON.
+
+JSON FORMAT:
 
 {{
-"location":"(2,4)",
-"frequency":164,
-"strategy_decision":"route_elimination",
-"reasoning":"",
-"priority_corridor":"center",
-"priority_reasoning":"",
-"route_weights":0.7,
-"coverage_weights":0.3,
-"implementation_notes":"",
-"expected_impact":""
+    "location": "<top bottleneck location>",
+    "frequency": <top bottleneck frequency>,
+
+    "strategy_decision":
+        "<route_elimination or coverage_expansion>",
+
+    "reasoning":
+        "<explain why>",
+
+    "priority_corridor":
+        "<west or center or east>",
+
+    
+    "priority_bottlenecks":
+        "<give top 5 bottlenecks>",
+    "priority_reasoning":
+        "<explain corridor choice>",    
+    "route_weights":
+        <float>,
+
+    "coverage_weights":
+        <float>,
+
+    "implementation_notes":
+        "<camera placement guidance>",
+
+    "expected_impact":
+        "<predicted effect>"
+    "weight_formula":
+        "<formula used>"
 }}
+
+Return ONLY JSON.
 """
     return prompt
 def extract_json_from_response(response: str) -> Dict[str, Any]:
@@ -228,6 +306,7 @@ def normalize_strategy(strategy: Dict[str, Any]) -> Dict[str, Any]:
     'reasoning',
     'priority_corridor',
     'priority_reasoning',
+    'priority_bottlenecks',
     'route_weights',
     'coverage_weights',
     'implementation_notes',
@@ -258,6 +337,7 @@ def validate_and_repair_strategy(strategy: Dict[str, Any]) -> tuple[bool, Dict[s
         'reasoning',
         'priority_corridor',
         'priority_reasoning',
+        'priority_bottlenecks',
         'route_weights',
         'coverage_weights',
         'implementation_notes',
@@ -280,8 +360,9 @@ def validate_and_repair_strategy(strategy: Dict[str, Any]) -> tuple[bool, Dict[s
     'reasoning': 'Based on corridor analysis',
     'priority_corridor': 'center',
     'priority_reasoning': 'Highest usage concentration',
-    'route_weights': 0.7,
-    'coverage_weights': 0.3,
+    'priority_bottlenecks': [],
+    'route_weights': None,
+    'coverage_weights': None,
     'implementation_notes': 'Standard implementation approach',
     'expected_impact': '20-25% efficiency improvement'
 }
@@ -325,7 +406,7 @@ def enhance_strategy(strategy: Dict[str, Any], summary_data: Dict[str, Any]) -> 
 
     "priority_corridor": strategy["priority_corridor"],
     "priority_reasoning": strategy["priority_reasoning"],
-
+    "priority_bottlenecks": strategy["priority_bottlenecks"],
     "route_weights": strategy["route_weights"],
     "coverage_weights": strategy["coverage_weights"],
 
@@ -362,7 +443,117 @@ def save_strategy(strategy: Dict[str, Any], output_path: str = "strategy.json"):
 # ============================================================================
 # MAIN EXECUTION
 # ============================================================================
+def get_latest_summary_file(summary_dir):
 
+    summary_files = []
+
+    for file in os.listdir(summary_dir):
+
+        if (
+            file.startswith("summary_iter_")
+            and file.endswith(".json")
+        ):
+
+            try:
+                iteration = int(
+                    file.replace("summary_iter_", "")
+                        .replace(".json", "")
+                )
+
+                summary_files.append(
+                    (iteration, file)
+                )
+
+            except:
+                pass
+
+    if not summary_files:
+        raise FileNotFoundError(
+            "No summary_iter_*.json files found"
+        )
+
+    summary_files.sort(
+        key=lambda x: x[0]
+    )
+
+    latest_file = summary_files[-1][1]
+
+    return os.path.join(
+        summary_dir,
+        latest_file
+    )
+# ==========================================================
+# AUTO DETECT LATEST SUMMARY FILE
+# ==========================================================
+
+def get_latest_summary_file(summary_dir):
+
+    default_summary = os.path.join(
+        summary_dir,
+        "summary.json"
+    )
+
+    summary_iters = []
+
+    for file in os.listdir(summary_dir):
+
+        if (
+            file.startswith("summary_iter_")
+            and file.endswith(".json")
+        ):
+
+            try:
+
+                iteration = int(
+                    file.replace(
+                        "summary_iter_",
+                        ""
+                    ).replace(
+                        ".json",
+                        ""
+                    )
+                )
+
+                summary_iters.append(
+                    (iteration, file)
+                )
+
+            except:
+                pass
+
+    # No iteration summaries yet
+    if len(summary_iters) == 0:
+
+        if os.path.exists(default_summary):
+
+            print(
+                "\nUsing summary.json "
+                "(Iteration 0)"
+            )
+
+            return default_summary
+
+        raise FileNotFoundError(
+            "No summary files found."
+        )
+
+    summary_iters.sort(
+        key=lambda x: x[0]
+    )
+
+    latest_file = summary_iters[-1][1]
+
+    latest_path = os.path.join(
+        summary_dir,
+        latest_file
+    )
+
+    print(
+        f"\nUsing latest summary: "
+        f"{latest_file}"
+    )
+
+    return latest_path
 def main(summary_json_path: str = "summary.json", output_path: str = "strategy.json"):
     """Main execution function"""
 
@@ -413,11 +604,32 @@ def main(summary_json_path: str = "summary.json", output_path: str = "strategy.j
 # ============================================================================
 if __name__ == "__main__":
 
-    summary_file = r"C:\Users\KHUSHI\Documents\deepterrain_internship\poleplacement_codes\DeepTerrain\agentic_ai\terrain_intelligence_output\summary.json"
+    SUMMARY_DIR = (
+        r"C:\Users\KHUSHI\Documents"
+        r"\deepterrain_internship"
+        r"\poleplacement_codes"
+        r"\DeepTerrain"
+        r"\agentic_ai"
+        r"\terrain_intelligence_output"
+    )
 
-    output_dir = r"C:\Users\KHUSHI\Documents\deepterrain_internship\poleplacement_codes\DeepTerrain\agentic_ai\agent2_output"
+    output_dir = (
+        r"C:\Users\KHUSHI\Documents"
+        r"\deepterrain_internship"
+        r"\poleplacement_codes"
+        r"\DeepTerrain"
+        r"\agentic_ai"
+        r"\agent2_output"
+    )
 
-    os.makedirs(output_dir, exist_ok=True)
+    os.makedirs(
+        output_dir,
+        exist_ok=True
+    )
+
+    summary_file = get_latest_summary_file(
+        SUMMARY_DIR
+    )
 
     output_file = os.path.join(
         output_dir,

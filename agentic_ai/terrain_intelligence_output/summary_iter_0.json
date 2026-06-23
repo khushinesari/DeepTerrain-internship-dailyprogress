@@ -1,0 +1,70 @@
+{
+  "iteration": 0,
+  "placed_cameras": 0,
+  "routes_remaining": 360,
+  "west_corridor_usage": 11.4,
+  "center_corridor_usage": 64.62,
+  "east_corridor_usage": 23.98,
+  "top_bottlenecks": [
+    {
+      "grid": "2_4",
+      "grid_row": 2,
+      "grid_col": 4,
+      "frequency": 164
+    },
+    {
+      "grid": "3_4",
+      "grid_row": 3,
+      "grid_col": 4,
+      "frequency": 164
+    },
+    {
+      "grid": "5_5",
+      "grid_row": 5,
+      "grid_col": 5,
+      "frequency": 130
+    },
+    {
+      "grid": "4_5",
+      "grid_row": 4,
+      "grid_col": 5,
+      "frequency": 130
+    },
+    {
+      "grid": "3_5",
+      "grid_row": 3,
+      "grid_col": 5,
+      "frequency": 130
+    },
+    {
+      "grid": "2_6",
+      "grid_row": 2,
+      "grid_col": 6,
+      "frequency": 126
+    },
+    {
+      "grid": "8_3",
+      "grid_row": 8,
+      "grid_col": 3,
+      "frequency": 126
+    },
+    {
+      "grid": "2_7",
+      "grid_row": 2,
+      "grid_col": 7,
+      "frequency": 124
+    },
+    {
+      "grid": "1_7",
+      "grid_row": 1,
+      "grid_col": 7,
+      "frequency": 124
+    },
+    {
+      "grid": "4_4",
+      "grid_row": 4,
+      "grid_col": 4,
+      "frequency": 120
+    }
+  ]
+}

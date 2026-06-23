@@ -7,7 +7,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
 
+# ============================================================
 # CONFIG
+# ============================================================
 
 TERRAIN_NPY = r"C:\Users\KHUSHI\Documents\deepterrain_internship\poleplacement_codes\DeepTerrain\Static_scripts\step4\terrain_mask.npy"
 
@@ -30,7 +32,9 @@ GOAL_OFFSET = 370
 
 RANDOM_SEED = 42
 
+# ============================================================
 # LOAD MASKS
+# ============================================================
 
 print("\n" + "=" * 60)
 print("MULTI A* ROUTE GENERATION STARTED")
@@ -70,13 +74,17 @@ print(f"Terrain Shape  : {terrain.shape}")
 print(f"Obstacle Shape : {obstacle.shape}")
 print(f"Select Shape   : {select.shape}")
 
+# ============================================================
 # WALKABLE REGION
+# ============================================================
 
 walkable = terrain & (~obstacle)
 
 print(f"\nWalkable Cells : {np.sum(walkable):,}")
 
+# ============================================================
 # START / GOAL EXTRACTION
+# ============================================================
 
 start_cells = np.array([
     (r, c)
@@ -93,7 +101,9 @@ goal_cells = np.array([
 print(f"\nAvailable Starts : {len(start_cells)}")
 print(f"Available Goals  : {len(goal_cells)}")
 
+# ============================================================
 # RANDOM SAMPLING
+# ============================================================
 
 rng = np.random.default_rng(RANDOM_SEED)
 
@@ -124,7 +134,9 @@ total_jobs = len(start_cells) * len(goal_cells)
 
 print(f"Total A* Runs  : {total_jobs}")
 
+# ============================================================
 # A*
+# ============================================================
 
 MOVES = [
     (-1,0),
@@ -236,7 +248,9 @@ def astar(start, goal):
 
     return None
 
+# ============================================================
 # GENERATE ROUTES
+# ============================================================
 
 print("\nGenerating Routes...\n")
 
@@ -271,7 +285,9 @@ print(
     f"{len(routes)}"
 )
 
+# ============================================================
 # REMOVE DUPLICATES
+# ============================================================
 
 unique_routes = {}
 
@@ -290,7 +306,9 @@ print(
     f"{len(routes)}"
 )
 
+# ============================================================
 # SAVE ROUTES
+# ============================================================
 
 routes_py = [
     [
@@ -329,8 +347,9 @@ np.save(
 print("Saved paths_1.json")
 print("Saved paths_1.npy")
 
+# ============================================================
 # VISUALIZATION
-
+# ============================================================
 
 print("\nGenerating Visualization...")
 

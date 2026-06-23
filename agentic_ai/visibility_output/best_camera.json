@@ -1,12 +1,16 @@
 {
-  "pole_id": 36690,
-  "world_x": 126.77656555175781,
-  "world_y": 1.2235254049301147,
-  "world_z": 21.040998458862305,
-  "bev_row": 245,
-  "bev_col": 494,
-  "azimuth": 30,
-  "coverage_gain": 5839,
-  "routes_intersected": 236,
-  "score": 241.839
+  "pole_id": 63248,
+  "grid": "5_7",
+  "world_x": 286.8518981933594,
+  "world_y": 69.97847747802734,
+  "world_z": 44.748626708984375,
+  "bev_row": 383,
+  "bev_col": 814,
+  "azimuth": 210,
+  "coverage_gain": 5917,
+  "routes_intersected": 92,
+  "raw_score": 97.917,
+  "route_metric": 1.0,
+  "coverage_metric": 1.0,
+  "final_score": 1.0
 }
