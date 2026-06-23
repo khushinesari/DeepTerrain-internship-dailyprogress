@@ -121,8 +121,7 @@ Your job is to analyze the route distribution and determine:
 IMPORTANT:
 
 The weights MUST be derived from the input data.
-You MUST select the 5 most important bottlenecks
-for the next camera placement.
+You MUST select the 5 most important bottlenecks from the input data for the next camera placement.
 
 Return them in:
 
