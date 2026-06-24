@@ -1,0 +1,16 @@
+{
+  "pole_id": 48023,
+  "grid": "7_5",
+  "world_x": 190.2504425048828,
+  "world_y": 140.62986755371094,
+  "world_z": 26.768245697021484,
+  "bev_row": 524,
+  "bev_col": 621,
+  "azimuth": 330,
+  "coverage_gain": 5652,
+  "routes_intersected": 30,
+  "raw_score": 35.652,
+  "route_metric": 1.0,
+  "coverage_metric": 0.9645,
+  "final_score": 0.9894
+}

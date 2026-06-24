@@ -1,0 +1,10 @@
+{
+  "iteration": 0,
+  "placed_cameras": 1,
+  "routes_before": 360,
+  "routes_removed": 236,
+  "routes_remaining": 124,
+  "coverage_percent": 1.59,
+  "blind_spot_percent": 98.41,
+  "next_routes_file": "C:\\Users\\KHUSHI\\Documents\\deepterrain_internship\\poleplacement_codes\\DeepTerrain\\agentic_ai\\runtime_state\\paths_iter_1.json"
+}
