@@ -11,7 +11,7 @@
     "world_z": 21.040998458862305,
     "routes_intersected": 236,
     "coverage_gain": 5839,
-    "final_score": 0.9981
+    "final_score": 0.9947
   },
   {
     "iteration": 1,
@@ -39,6 +39,6 @@
     "world_z": 26.768245697021484,
     "routes_intersected": 30,
     "coverage_gain": 5652,
-    "final_score": 0.9894
+    "final_score": 0.9858
   }
 ]

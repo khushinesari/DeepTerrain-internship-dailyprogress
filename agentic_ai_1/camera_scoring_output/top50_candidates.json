@@ -1,5 +1,18 @@
 [
   {
+    "pole_id": 73821,
+    "world_x": 404.82769775390625,
+    "world_y": 38.176239013671875,
+    "world_z": 60.561397552490234,
+    "bev_row": 319,
+    "bev_col": 1050,
+    "grid": "4_9",
+    "distance_to_center": 0.0,
+    "route_score": 0.6207,
+    "coverage_score": 1.0,
+    "final_score": 0.7724
+  },
+  {
     "pole_id": 47156,
     "world_x": 184.84957885742188,
     "world_y": 147.25738525390625,
@@ -10,7 +23,7 @@
     "distance_to_center": 5.0,
     "route_score": 1.0,
     "coverage_score": 0.1667,
-    "final_score": 0.75
+    "final_score": 0.6667
   },
   {
     "pole_id": 47157,
@@ -23,7 +36,7 @@
     "distance_to_center": 5.0,
     "route_score": 1.0,
     "coverage_score": 0.1667,
-    "final_score": 0.75
+    "final_score": 0.6667
   },
   {
     "pole_id": 47008,
@@ -36,7 +49,7 @@
     "distance_to_center": 5.385164807134504,
     "route_score": 1.0,
     "coverage_score": 0.1566,
-    "final_score": 0.747
+    "final_score": 0.6626
   },
   {
     "pole_id": 47603,
@@ -49,7 +62,7 @@
     "distance_to_center": 5.830951894845301,
     "route_score": 1.0,
     "coverage_score": 0.1464,
-    "final_score": 0.7439
+    "final_score": 0.6586
   },
   {
     "pole_id": 47602,
@@ -62,7 +75,7 @@
     "distance_to_center": 6.082762530298219,
     "route_score": 1.0,
     "coverage_score": 0.1412,
-    "final_score": 0.7424
+    "final_score": 0.6565
   },
   {
     "pole_id": 47304,
@@ -75,7 +88,7 @@
     "distance_to_center": 6.324555320336759,
     "route_score": 1.0,
     "coverage_score": 0.1365,
-    "final_score": 0.741
+    "final_score": 0.6546
   },
   {
     "pole_id": 47601,
@@ -88,7 +101,7 @@
     "distance_to_center": 6.708203932499369,
     "route_score": 1.0,
     "coverage_score": 0.1297,
-    "final_score": 0.7389
+    "final_score": 0.6519
   },
   {
     "pole_id": 47739,
@@ -101,7 +114,7 @@
     "distance_to_center": 7.0710678118654755,
     "route_score": 1.0,
     "coverage_score": 0.1239,
-    "final_score": 0.7372
+    "final_score": 0.6496
   },
   {
     "pole_id": 46875,
@@ -114,7 +127,7 @@
     "distance_to_center": 7.211102550927978,
     "route_score": 1.0,
     "coverage_score": 0.1218,
-    "final_score": 0.7365
+    "final_score": 0.6487
   },
   {
     "pole_id": 47600,
@@ -127,7 +140,7 @@
     "distance_to_center": 7.211102550927978,
     "route_score": 1.0,
     "coverage_score": 0.1218,
-    "final_score": 0.7365
+    "final_score": 0.6487
   },
   {
     "pole_id": 47738,
@@ -140,20 +153,7 @@
     "distance_to_center": 7.615773105863909,
     "route_score": 1.0,
     "coverage_score": 0.1161,
-    "final_score": 0.7348
-  },
-  {
-    "pole_id": 73821,
-    "world_x": 404.82769775390625,
-    "world_y": 38.176239013671875,
-    "world_z": 60.561397552490234,
-    "bev_row": 319,
-    "bev_col": 1050,
-    "grid": "4_9",
-    "distance_to_center": 0.0,
-    "route_score": 0.6207,
-    "coverage_score": 1.0,
-    "final_score": 0.7345
+    "final_score": 0.6464
   },
   {
     "pole_id": 47158,
@@ -166,7 +166,7 @@
     "distance_to_center": 8.0,
     "route_score": 1.0,
     "coverage_score": 0.1111,
-    "final_score": 0.7333
+    "final_score": 0.6444
   },
   {
     "pole_id": 47737,
@@ -179,7 +179,7 @@
     "distance_to_center": 8.06225774829855,
     "route_score": 1.0,
     "coverage_score": 0.1103,
-    "final_score": 0.7331
+    "final_score": 0.6441
   },
   {
     "pole_id": 47009,
@@ -192,7 +192,7 @@
     "distance_to_center": 8.246211251235321,
     "route_score": 1.0,
     "coverage_score": 0.1082,
-    "final_score": 0.7324
+    "final_score": 0.6433
   },
   {
     "pole_id": 46876,
@@ -205,7 +205,7 @@
     "distance_to_center": 8.602325267042627,
     "route_score": 1.0,
     "coverage_score": 0.1041,
-    "final_score": 0.7312
+    "final_score": 0.6417
   },
   {
     "pole_id": 47159,
@@ -218,7 +218,7 @@
     "distance_to_center": 9.055385138137417,
     "route_score": 1.0,
     "coverage_score": 0.0994,
-    "final_score": 0.7298
+    "final_score": 0.6398
   },
   {
     "pole_id": 46566,
@@ -231,7 +231,7 @@
     "distance_to_center": 9.219544457292887,
     "route_score": 1.0,
     "coverage_score": 0.0979,
-    "final_score": 0.7294
+    "final_score": 0.6391
   },
   {
     "pole_id": 46717,
@@ -244,7 +244,7 @@
     "distance_to_center": 9.219544457292887,
     "route_score": 1.0,
     "coverage_score": 0.0979,
-    "final_score": 0.7294
+    "final_score": 0.6391
   },
   {
     "pole_id": 46718,
@@ -257,7 +257,7 @@
     "distance_to_center": 9.219544457292887,
     "route_score": 1.0,
     "coverage_score": 0.0979,
-    "final_score": 0.7294
+    "final_score": 0.6391
   },
   {
     "pole_id": 46567,
@@ -270,7 +270,7 @@
     "distance_to_center": 9.848857801796104,
     "route_score": 1.0,
     "coverage_score": 0.0922,
-    "final_score": 0.7277
+    "final_score": 0.6369
   },
   {
     "pole_id": 46417,
@@ -283,7 +283,7 @@
     "distance_to_center": 10.04987562112089,
     "route_score": 1.0,
     "coverage_score": 0.0905,
-    "final_score": 0.7271
+    "final_score": 0.6362
   },
   {
     "pole_id": 46418,
@@ -296,7 +296,7 @@
     "distance_to_center": 10.04987562112089,
     "route_score": 1.0,
     "coverage_score": 0.0905,
-    "final_score": 0.7271
+    "final_score": 0.6362
   },
   {
     "pole_id": 47010,
@@ -309,7 +309,7 @@
     "distance_to_center": 10.198039027185569,
     "route_score": 1.0,
     "coverage_score": 0.0893,
-    "final_score": 0.7268
+    "final_score": 0.6357
   },
   {
     "pole_id": 46419,
@@ -322,7 +322,7 @@
     "distance_to_center": 10.770329614269007,
     "route_score": 1.0,
     "coverage_score": 0.085,
-    "final_score": 0.7255
+    "final_score": 0.634
   },
   {
     "pole_id": 47876,
@@ -335,7 +335,7 @@
     "distance_to_center": 10.770329614269007,
     "route_score": 1.0,
     "coverage_score": 0.085,
-    "final_score": 0.7255
+    "final_score": 0.634
   },
   {
     "pole_id": 46719,
@@ -348,7 +348,7 @@
     "distance_to_center": 10.816653826391969,
     "route_score": 1.0,
     "coverage_score": 0.0846,
-    "final_score": 0.7254
+    "final_score": 0.6339
   },
   {
     "pole_id": 46877,
@@ -361,7 +361,7 @@
     "distance_to_center": 11.180339887498949,
     "route_score": 1.0,
     "coverage_score": 0.0821,
-    "final_score": 0.7246
+    "final_score": 0.6328
   },
   {
     "pole_id": 46878,
@@ -374,7 +374,7 @@
     "distance_to_center": 11.704699910719626,
     "route_score": 1.0,
     "coverage_score": 0.0787,
-    "final_score": 0.7236
+    "final_score": 0.6315
   },
   {
     "pole_id": 46267,
@@ -387,7 +387,7 @@
     "distance_to_center": 12.0,
     "route_score": 1.0,
     "coverage_score": 0.0769,
-    "final_score": 0.7231
+    "final_score": 0.6308
   },
   {
     "pole_id": 46268,
@@ -400,7 +400,7 @@
     "distance_to_center": 12.041594578792296,
     "route_score": 1.0,
     "coverage_score": 0.0767,
-    "final_score": 0.723
+    "final_score": 0.6307
   },
   {
     "pole_id": 47875,
@@ -413,7 +413,7 @@
     "distance_to_center": 12.206555615733702,
     "route_score": 1.0,
     "coverage_score": 0.0757,
-    "final_score": 0.7227
+    "final_score": 0.6303
   },
   {
     "pole_id": 46269,
@@ -426,7 +426,7 @@
     "distance_to_center": 12.36931687685298,
     "route_score": 1.0,
     "coverage_score": 0.0748,
-    "final_score": 0.7224
+    "final_score": 0.6299
   },
   {
     "pole_id": 46720,
@@ -439,7 +439,7 @@
     "distance_to_center": 13.038404810405298,
     "route_score": 1.0,
     "coverage_score": 0.0712,
-    "final_score": 0.7214
+    "final_score": 0.6285
   },
   {
     "pole_id": 48024,
@@ -452,7 +452,7 @@
     "distance_to_center": 13.038404810405298,
     "route_score": 1.0,
     "coverage_score": 0.0712,
-    "final_score": 0.7214
+    "final_score": 0.6285
   },
   {
     "pole_id": 48023,
@@ -465,7 +465,7 @@
     "distance_to_center": 13.601470508735444,
     "route_score": 1.0,
     "coverage_score": 0.0685,
-    "final_score": 0.7205
+    "final_score": 0.6274
   },
   {
     "pole_id": 46270,
@@ -478,7 +478,7 @@
     "distance_to_center": 13.92838827718412,
     "route_score": 1.0,
     "coverage_score": 0.067,
-    "final_score": 0.7201
+    "final_score": 0.6268
   },
   {
     "pole_id": 46115,
@@ -491,7 +491,7 @@
     "distance_to_center": 14.317821063276353,
     "route_score": 1.0,
     "coverage_score": 0.0653,
-    "final_score": 0.7196
+    "final_score": 0.6261
   },
   {
     "pole_id": 46116,
@@ -504,7 +504,7 @@
     "distance_to_center": 14.317821063276353,
     "route_score": 1.0,
     "coverage_score": 0.0653,
-    "final_score": 0.7196
+    "final_score": 0.6261
   },
   {
     "pole_id": 46117,
@@ -517,7 +517,7 @@
     "distance_to_center": 15.231546211727817,
     "route_score": 1.0,
     "coverage_score": 0.0616,
-    "final_score": 0.7185
+    "final_score": 0.6246
   },
   {
     "pole_id": 46721,
@@ -530,7 +530,7 @@
     "distance_to_center": 15.652475842498529,
     "route_score": 1.0,
     "coverage_score": 0.0601,
-    "final_score": 0.718
+    "final_score": 0.624
   },
   {
     "pole_id": 48173,
@@ -543,7 +543,7 @@
     "distance_to_center": 15.652475842498529,
     "route_score": 1.0,
     "coverage_score": 0.0601,
-    "final_score": 0.718
+    "final_score": 0.624
   },
   {
     "pole_id": 46568,
@@ -556,7 +556,7 @@
     "distance_to_center": 16.1245154965971,
     "route_score": 1.0,
     "coverage_score": 0.0584,
-    "final_score": 0.7175
+    "final_score": 0.6234
   },
   {
     "pole_id": 46569,
@@ -569,7 +569,7 @@
     "distance_to_center": 17.0,
     "route_score": 1.0,
     "coverage_score": 0.0556,
-    "final_score": 0.7167
+    "final_score": 0.6222
   },
   {
     "pole_id": 48175,
@@ -582,7 +582,7 @@
     "distance_to_center": 17.204650534085253,
     "route_score": 1.0,
     "coverage_score": 0.0549,
-    "final_score": 0.7165
+    "final_score": 0.622
   },
   {
     "pole_id": 45953,
@@ -595,7 +595,7 @@
     "distance_to_center": 17.46424919657298,
     "route_score": 1.0,
     "coverage_score": 0.0542,
-    "final_score": 0.7162
+    "final_score": 0.6217
   },
   {
     "pole_id": 45954,
@@ -608,7 +608,7 @@
     "distance_to_center": 17.46424919657298,
     "route_score": 1.0,
     "coverage_score": 0.0542,
-    "final_score": 0.7162
+    "final_score": 0.6217
   },
   {
     "pole_id": 48315,
@@ -621,7 +621,7 @@
     "distance_to_center": 17.4928556845359,
     "route_score": 1.0,
     "coverage_score": 0.0541,
-    "final_score": 0.7162
+    "final_score": 0.6216
   },
   {
     "pole_id": 48174,
@@ -634,7 +634,7 @@
     "distance_to_center": 17.804493814764857,
     "route_score": 1.0,
     "coverage_score": 0.0532,
-    "final_score": 0.716
+    "final_score": 0.6213
   },
   {
     "pole_id": 48314,
@@ -647,6 +647,6 @@
     "distance_to_center": 17.88854381999832,
     "route_score": 1.0,
     "coverage_score": 0.0529,
-    "final_score": 0.7159
+    "final_score": 0.6212
   }
 ]
