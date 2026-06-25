@@ -19,52 +19,54 @@ import os
 # SETUP AND CONFIGURATION
 # ============================================================================
 
-# def setup_device():
-#     """Configure device for inference"""
-#     if torch.cuda.is_available():
-#         device = torch.device("cuda")
-#         print(f" Using GPU: {torch.cuda.get_device_name(0)}")
-#     else:
-#         device = torch.device("cpu")
-#         print(" GPU not available, using CPU (slower)")
-#     return device
+def setup_device():
+    """Configure device for inference"""
+    if torch.cuda.is_available():
+        device = torch.device("cuda")
+        print(f" Using GPU: {torch.cuda.get_device_name(0)}")
+    else:
+        device = torch.device("cpu")
+        print(" GPU not available, using CPU (slower)")
+    return device
 
-# def load_qwen_model(device):
-#     """Load Qwen 2.5 3B Instruct model"""
-#     HF_TOKEN = os.getenv("HF_TOKEN")
-#     print("\n Loading Qwen 2.5 3B Instruct model...")
+def load_qwen_model(device):
+    """Load Qwen 2.5 3B Instruct model"""
+    HF_TOKEN = os.getenv("HF_TOKEN")
+    print("\n Loading Qwen 2.5 3B Instruct model...")
 
-#     model_id = "Qwen/Qwen2.5-3B-Instruct"
+    model_id = "Qwen/Qwen2.5-3B-Instruct"
 
-#     try:
-#         tokenizer = AutoTokenizer.from_pretrained(model_id,token=HF_TOKEN)
-#         model = AutoModelForCausalLM.from_pretrained(
-#             model_id,
-#             token=HF_TOKEN,
-#             torch_dtype=torch.float16 if device.type == "cuda" else torch.float32,
-#             device_map="auto" if device.type == "cuda" else None
-#         )
-#         if device.type == "cpu":
-#             model = model.to(device)
-#         model.eval()
-#         print(" Qwen 2.5 3B Instruct loaded successfully")
-#         return tokenizer, model
-#     except Exception as e:
-#         print(f" Error loading model: {e}")
-#         raise
+    try:
+        tokenizer = AutoTokenizer.from_pretrained(model_id,token=HF_TOKEN)
+        model = AutoModelForCausalLM.from_pretrained(
+            model_id,
+            token=HF_TOKEN,
+            torch_dtype=torch.float16 if device.type == "cuda" else torch.float32,
+            device_map="auto" if device.type == "cuda" else None
+        )
+        if device.type == "cpu":
+            model = model.to(device)
+        model.eval()
+        print(" Qwen 2.5 3B Instruct loaded successfully")
+        return tokenizer, model
+    except Exception as e:
+        print(f" Error loading model: {e}")
+        raise
 
-API_KEY = os.getenv(
-    "GEMINI_API_KEY"
-)
+#===gemini====
+# API_KEY = os.getenv(
+#     "GEMINI_API_KEY"
+# )
+# print("\nDEBUG API KEY:")
+# print(repr(API_KEY))
+# if API_KEY is None:
+#     raise ValueError(
+#         "GEMINI_API_KEY not found"
+#     )
 
-if API_KEY is None:
-    raise ValueError(
-        "GEMINI_API_KEY not found"
-    )
-
-genai.configure(
-    api_key=API_KEY.strip()
-)
+# genai.configure(
+#     api_key=API_KEY.strip()
+# )
 
 # ============================================================================
 # DATA LOADING AND ANALYSIS
@@ -242,77 +244,78 @@ def extract_json_from_response(response: str) -> Dict[str, Any]:
         raise ValueError("JSON object not closed")
 
     return json.loads(response[json_start:json_end])
+#=====qwen2.5=====
+def query_llm(tokenizer, model, prompt: str, device) -> str:
+    """Query Qwen model and get response"""
+    print("\n Querying Qwen 2.5 3B for strategy analysis...")
 
-# def query_llm(tokenizer, model, prompt: str, device) -> str:
-#     """Query Qwen model and get response"""
-#     print("\n Querying Qwen 2.5 3B for strategy analysis...")
+    try:
+        # Prepare input
+        messages = [
+            {"role": "user", "content": prompt}
+        ]
+        print("\n========== DEBUG PROMPT ==========")
+        print(type(prompt))
+        print(prompt)
+        print("==================================")
+        text = tokenizer.apply_chat_template(
+            messages,
+            tokenize=False,
+            add_generation_prompt=True
+        )
 
-#     try:
-#         # Prepare input
-#         messages = [
-#             {"role": "user", "content": prompt}
-#         ]
-#         print("\n========== DEBUG PROMPT ==========")
-#         print(type(prompt))
-#         print(prompt)
-#         print("==================================")
-#         text = tokenizer.apply_chat_template(
-#             messages,
-#             tokenize=False,
-#             add_generation_prompt=True
-#         )
+        model_inputs = tokenizer(text, return_tensors="pt").to(device)
 
-#         model_inputs = tokenizer(text, return_tensors="pt").to(device)
+        # Generate response with optimized parameters
+        with torch.no_grad():
+            generated_ids = model.generate(
+                **model_inputs,
+                max_new_tokens=1000,
+                temperature=0.1,          # Very low for JSON consistency
+                top_p=0.9,
+                top_k=50,
+                do_sample=True,          # No randomness for JSON
+                pad_token_id=tokenizer.eos_token_id
+            )
 
-#         # Generate response with optimized parameters
-#         with torch.no_grad():
-#             generated_ids = model.generate(
-#                 **model_inputs,
-#                 max_new_tokens=1000,
-#                 temperature=0.1,          # Very low for JSON consistency
-#                 top_p=0.9,
-#                 top_k=50,
-#                 do_sample=True,          # No randomness for JSON
-#                 pad_token_id=tokenizer.eos_token_id
-#             )
+        # Decode response
+        generated_ids = generated_ids[:, model_inputs.input_ids.shape[1]:]
 
-#         # Decode response
-#         generated_ids = generated_ids[:, model_inputs.input_ids.shape[1]:]
+        response = tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
 
-#         response = tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
+        # Extract JSON
+        strategy = extract_json_from_response(response)
+        print(" Strategy analysis completed successfully")
+        return strategy
 
-#         # Extract JSON
-#         strategy = extract_json_from_response(response)
-#         print(" Strategy analysis completed successfully")
-#         return strategy
+    except Exception as e:
+        print(f" Error querying LLM: {e}")
+        print(f"Response preview: {response[:200] if 'response' in locals() else 'N/A'}")
+        raise
 
-#     except Exception as e:
-#         print(f" Error querying LLM: {e}")
-#         print(f"Response preview: {response[:200] if 'response' in locals() else 'N/A'}")
-#         raise
+#====gemini=====
+# def query_llm(prompt):
 
-def query_llm(prompt):
+#     model = genai.GenerativeModel(
+#         "gemini-2.5-flash"
+#     )
 
-    model = genai.GenerativeModel(
-        "gemini-2.5-flash"
-    )
+#     response = model.generate_content(
+#         prompt
+#     )
 
-    response = model.generate_content(
-        prompt
-    )
+#     raw_text = response.text.strip()
 
-    raw_text = response.text.strip()
+#     print(
+#         "\nLLM RAW RESPONSE:\n"
+#     )
+#     print(raw_text)
 
-    print(
-        "\nLLM RAW RESPONSE:\n"
-    )
-    print(raw_text)
+#     strategy = extract_json_from_response(
+#         raw_text
+#     )
 
-    strategy = extract_json_from_response(
-        raw_text
-    )
-
-    return strategy
+#     return strategy
 
 
 # ============================================================================
@@ -592,8 +595,8 @@ def main(summary_json_path: str = "summary.json", output_path: str = "strategy.j
 
     try:
         # 1. Setup
-        #device = setup_device()
-        #tokenizer, model = load_qwen_model(device)
+        device = setup_device()
+        tokenizer, model = load_qwen_model(device)
 
         # 2. Load data
         summary_data = load_summary_json(summary_json_path)
@@ -601,8 +604,10 @@ def main(summary_json_path: str = "summary.json", output_path: str = "strategy.j
 
         # 3. Create prompt and query LLM
         prompt = create_analysis_prompt(summary_data, corridor_analysis)
-        #strategy = query_llm(tokenizer, model, prompt, device)
-        strategy = query_llm(prompt)
+        strategy = query_llm(tokenizer, model, prompt, device)
+        #gemini
+        # strategy = query_llm(prompt)
+
         # 4. Validate and enhance
         is_valid, strategy = validate_and_repair_strategy(strategy)
 
@@ -659,10 +664,14 @@ if __name__ == "__main__":
     summary_file = get_latest_summary_file(
         SUMMARY_DIR
     )
+    
+    with open(summary_file, "r") as f:
+        summary_data = json.load(f)
 
+    iteration = summary_data["iteration"]
     output_file = os.path.join(
         output_dir,
-        "strategy.json"
+        f"strategy_iter_{iteration}.json"
     )
 
     strategy_result = main(

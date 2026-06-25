@@ -17,7 +17,48 @@ TERRAIN_MASK = r"C:\Users\KHUSHI\Documents\deepterrain_internship\poleplacement_
 
 OBSTACLE_MASK = r"C:\Users\KHUSHI\Documents\deepterrain_internship\poleplacement_codes\DeepTerrain\Static_scripts\step3\output\obstacle_mask.npy"
 
-STRATEGY_JSON = r"C:\Users\KHUSHI\Documents\deepterrain_internship\poleplacement_codes\DeepTerrain\agentic_ai\agent2_output\strategy.json"
+#STRATEGY_JSON = r"C:\Users\KHUSHI\Documents\deepterrain_internship\poleplacement_codes\DeepTerrain\agentic_ai\agent2_output\strategy.json"
+STRATEGY_DIR = (
+    r"C:\Users\KHUSHI\Documents"
+    r"\deepterrain_internship"
+    r"\poleplacement_codes"
+    r"\DeepTerrain"
+    r"\agentic_ai"
+    r"\agent2_output"
+)
+#===helper===
+def get_latest_strategy():
+
+    strategy_files = []
+
+    for file in os.listdir(STRATEGY_DIR):
+
+        if (
+            file.startswith("strategy_iter_")
+            and file.endswith(".json")
+        ):
+
+            idx = int(
+                file.replace(
+                    "strategy_iter_",
+                    ""
+                ).replace(
+                    ".json",
+                    ""
+                )
+            )
+
+            strategy_files.append(
+                (idx, file)
+            )
+
+    strategy_files.sort()
+
+    return os.path.join(
+        STRATEGY_DIR,
+        strategy_files[-1][1]
+    )
+
 
 OUT_DIR = r"C:\Users\KHUSHI\Documents\deepterrain_internship\poleplacement_codes\DeepTerrain\agentic_ai\visibility_output"
 
@@ -114,6 +155,7 @@ with open(TOP50_JSON, "r") as f:
 with open(PATHS_JSON, "r") as f:
     routes = json.load(f)
 
+STRATEGY_JSON = get_latest_strategy()
 with open(STRATEGY_JSON, "r") as f:
     strategy = json.load(f)
 

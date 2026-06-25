@@ -1,10 +1,7 @@
 import google.generativeai as genai
-import os
 
 genai.configure(
-    api_key=os.getenv(
-        "GEMINI_API_KEY"
-    )
+    api_key="YOUR_ACTUAL_API_KEY"
 )
 
 model = genai.GenerativeModel(
@@ -12,7 +9,7 @@ model = genai.GenerativeModel(
 )
 
 response = model.generate_content(
-    "Return only JSON: {'test':1}"
+    "Say hello"
 )
 
 print(response.text)
