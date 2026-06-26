@@ -11,8 +11,8 @@
 # dataset mei
 - Pedestrian
 - Attributes:
- - Age_Group: Child, Adult
- - Gender: Male, Female
+    - Age_Group: Child, Adult
+    - Gender: Male, Female
 - Bicycle
 - Bike
 - Car
@@ -21,8 +21,8 @@
 - Auto_Rickshaw
 - Person
 - Attributes:
- - Age_Group: Child, Adult
- - Gender: Male,Female
+   - Age_Group: Child, Adult
+   - Gender: Male,Female
 - Tractor
 - Van
 - Proclainer
@@ -30,7 +30,7 @@
 - Road_Roller
 - Road_paver
 - Animal (Phase 2)
- - Attributes: Cow, Dog, Monkey
+    - Attributes: Cow, Dog, Monkey
 # deepterrain_data
 - intruder(person only)
 # thermal camera data 
