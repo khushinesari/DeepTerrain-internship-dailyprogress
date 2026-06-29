@@ -229,3 +229,33 @@ Update Weights
 - The Detection Head converts those features into bounding boxes, class predictions, and confidence scores.
 - After the network predicts, confidence thresholding and NMS produce the final detections.
 - This backbone → neck → head design is the foundation of modern YOLO models.
+## Chapter 3 – The Backbone: How YOLO Learns Visual Features
+- The backbone's purpose is feature extraction, not direct object detection.
+- YOLO uses repeated Convolution → Batch Normalization → Activation blocks.
+- As the network gets deeper, feature maps become smaller but more meaningful.
+- Residual connections allow information and gradients to flow more easily through deep networks.
+- CSP improves efficiency by partially processing feature maps while preserving information.
+- C2f blocks further improve feature reuse and gradient flow in modern Ultralytics YOLO models.
+- The backbone learns reusable visual features that can be combined to recognize many different object classes.
+## Chapter 4: The Neck — Feature Fusion and Multi-Scale Learning
+```
+Backbone
+     │
+     ▼
+Feature Map 1 (High Resolution)
+Feature Map 2 (Medium Resolution)
+Feature Map 3 (Low Resolution)
+     │
+     ▼
+FPN
+     │
+     ▼
+PAN
+     │
+     ▼
+Fused Multi-scale Feature Maps
+     │
+     ▼
+Detection Heads
+```
+
