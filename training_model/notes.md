@@ -239,23 +239,117 @@ Update Weights
 - The backbone learns reusable visual features that can be combined to recognize many different object classes.
 ## Chapter 4: The Neck — Feature Fusion and Multi-Scale Learning
 ```
+Input Image
+      │
+      ▼
 Backbone
-     │
-     ▼
-Feature Map 1 (High Resolution)
-Feature Map 2 (Medium Resolution)
-Feature Map 3 (Low Resolution)
-     │
-     ▼
-FPN
-     │
-     ▼
-PAN
-     │
-     ▼
-Fused Multi-scale Feature Maps
-     │
-     ▼
+(Extract Features)
+      │
+      ▼
+Multiple Feature Maps
+      │
+      ▼
+Feature Pyramid Network (FPN)
+      │
+      ▼
+Path Aggregation Network (PAN)
+      │
+      ▼
+Fused Multi-scale Features
+      │
+      ▼
 Detection Heads
+      │
+      ▼
+Bounding Boxes
+Classes
+Confidence
 ```
-
+- The backbone alone is not enough because early and deep layers contain different kinds of information.
+- Feature Fusion combines low-level detail with high-level semantic understanding.
+- Feature Pyramid Networks (FPN) move semantic information from deep layers toward shallow layers.
+- Path Aggregation Networks (PAN) move localization information back toward deeper layers.
+- The neck produces rich multi-scale feature maps that improve detection across different object sizes.
+- The neck does not make predictions—it prepares better inputs for the detection heads.
+## Chapter 5 – The Detection Head: Where YOLO Makes Predictions
+```
+Raw Predictions
+      │
+      ▼
+Confidence Threshold
+      │
+      ▼
+Remove Weak Predictions
+      │
+      ▼
+Non-Maximum Suppression
+      │
+      ▼
+Remove Duplicate Boxes
+      │
+      ▼
+Final Detections
+```
+- The Detection Head is responsible for converting feature maps into predictions.
+- Every prediction contains:
+   - Bounding box coordinates
+   - Class scores
+   - Confidence score
+- YOLO evaluates thousands of candidate locations in one forward pass.
+- Modern YOLO models use multiple detection heads for different object sizes.
+- YOLO11 uses an anchor-free detection strategy, simplifying training and prediction.
+- The detection head outputs raw tensors, which are then cleaned using confidence filtering and Non-Maximum Suppression.
+## Chapter 6 – The Complete YOLO11 Training Pipeline
+### The Complete YOLO11 Training Pipeline
+```
+Dataset
+   │
+   ▼
+Load Images & Labels
+   │
+   ▼
+Data Augmentation
+   │
+   ▼
+Create Batch
+   │
+   ▼
+Forward Pass
+   │
+   ▼
+Raw Predictions
+   │
+   ▼
+Label Assignment
+   │
+   ▼
+Loss Calculation
+   │
+   ▼
+Backpropagation
+   │
+   ▼
+Optimizer Updates Weights
+   │
+   ▼
+Next Batch
+   │
+   ▼
+End of Epoch
+   │
+   ▼
+Validation
+   │
+   ▼
+Repeat Until Training Ends
+```
+- YOLO pairs each image with its corresponding label file.
+- Images are resized and often augmented before training.
+- Training is performed on batches, not individual images.
+- The forward pass produces raw predictions.
+- Label assignment matches predictions to ground-truth objects.
+- The model computes losses for classification, localization, and confidence/objectness.
+- Backpropagation calculates how to reduce these errors.
+- The optimizer updates millions of weights.
+- One epoch means processing the entire training dataset once.
+- Validation measures performance on unseen data without updating the model.
