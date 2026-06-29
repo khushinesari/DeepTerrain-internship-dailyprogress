@@ -93,3 +93,139 @@
   - class_id center_x center_y width height
 - Annotation tools automatically generate these label files from the rectangles you draw.
 ## Chapter 3 – Confidence Score and Class Prediction
+- Confidence represents how certain the model is about a prediction.
+- Confidence values range from 0 to 1.
+- YOLO considers all possible classes before selecting the most likely one.
+- Every detection contains:
+   - A class label
+   - A bounding box
+   - A confidence score
+- A confidence threshold filters out weak predictions.
+- Confidence measures certainty about the prediction, not necessarily the accuracy of the bounding box.
+## Chapter 4 – Intersection over Union (IoU)
+- Ground Truth is the human-annotated correct bounding box.
+- Intersection is the overlapping area between the predicted and ground truth boxes.
+- Union is the total area covered by both boxes.
+- IoU measures the quality of localization by comparing overlap.
+- IoU ranges from 0 (no overlap) to 1 (perfect overlap).
+- A correct object class is not enough—the bounding box must also overlap sufficiently.
+- IoU is used during training, evaluation, and post-processing throughout modern object detectors.
+## Chapter 5 – Non-Maximum Suppression (NMS)
+- YOLO naturally predicts many overlapping boxes for the same object.
+- These duplicate predictions are expected—they are not a bug.
+- Non-Maximum Suppression (NMS) removes duplicate boxes by:
+    - Sorting predictions by confidence.
+    - Keeping the highest-confidence box.
+    - Removing boxes with high IoU overlap.
+    - Repeating until no duplicates remain.
+- NMS uses both confidence and IoU.
+- Standard NMS can struggle in crowded scenes.
+- Variants like Soft-NMS and techniques like Weighted Box Fusion address some of these limitations.
+## Chapter 6 – TP, FP, FN, TN, Precision, Recall & Confusion Matrix
+- True Positive (TP): Correct detection.
+- False Positive (FP): Wrong detection (false alarm).
+- False Negative (FN): Missed object.
+- True Negative (TN): Correctly predicting that no object is present (less useful in detection).
+- Precision measures how trustworthy the model's detections are. 
+- Recall measures how many real objects the model successfully finds.
+- Increasing the confidence threshold usually increases precision but decreases recall.
+- A confusion matrix summarizes where the model is making classification mistakes.
+- Object detection evaluation considers both class correctness and bounding box overlap (IoU).
+## Chapter 7 – Average Precision (AP) and Mean Average Precision (mAP)
+- Precision and Recall vary with the confidence threshold.
+- A Precision–Recall Curve summarizes this trade-off.
+- Average Precision (AP) is the area under the Precision–Recall curve for a single class.
+- Mean Average Precision (mAP) is the average AP across all classes.
+- mAP@0.5 uses a single IoU threshold of 0.50.
+- mAP@0.5:0.95 averages performance over multiple IoU thresholds and is much stricter.
+- mAP is the primary metric used to compare object detection models because it combines localization and classification performance across classes.
+# PHASE 3 – Understanding YOLO Internals
+## Chapter 1 – The Evolution of YOLO (YOLOv1 → YOLO11)
+## Chapter 2: Overall YOLO11 Architecture
+```Input Image
+      │
+      ▼
++------------------+
+|    Backbone      |
++------------------+
+      │
+      ▼
++------------------+
+|       Neck       |
++------------------+
+      │
+      ▼
++------------------+
+| Detection Head   |
++------------------+
+      │
+      ▼
+Final Predictions
+```
+- complete forward pass
+```
+Image
+  │
+  ▼
+Resize (640×640)
+  │
+  ▼
+Convert to Pixel Values
+  │
+  ▼
+Backbone
+  │
+  ▼
+Extract Feature Maps
+  │
+  ▼
+Neck
+  │
+  ▼
+Fuse Multi-scale Features
+  │
+  ▼
+Detection Heads
+  │
+  ├── Bounding Boxes
+  │
+  ├── Class Scores
+  │
+  └── Confidence Scores
+  ▼
+Raw Predictions
+  │
+  ▼
+Confidence Threshold
+  │
+  ▼
+Non-Maximum Suppression
+  │
+  ▼
+Final Detections
+```
+- training pipeline
+```
+  Image
+   │
+   ▼
+YOLO Predictions
+   │
+   ▼
+Compare with Ground Truth
+   │
+   ▼
+Calculate Loss
+   │
+   ▼
+Backpropagation
+   │
+   ▼
+Update Weights
+```
+- Every image first passes through the Backbone, which extracts useful visual features.
+- These features are stored as feature maps.
+- The Neck combines feature maps from different depths to improve detection -across object sizes.
+- The Detection Head converts those features into bounding boxes, class predictions, and confidence scores.
+- After the network predicts, confidence thresholding and NMS produce the final detections.
+- This backbone → neck → head design is the foundation of modern YOLO models.
