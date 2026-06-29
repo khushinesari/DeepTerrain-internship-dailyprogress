@@ -353,3 +353,53 @@ Repeat Until Training Ends
 - The optimizer updates millions of weights.
 - One epoch means processing the entire training dataset once.
 - Validation measures performance on unseen data without updating the model.
+## Chapter 7 – The YOLO Dataset Format
+- dataset structure 
+```
+dataset/
+│
+├── images/
+│   ├── train/
+│   ├── val/
+│   └── test/
+│
+├── labels/
+│   ├── train/
+│   ├── val/
+│   └── test/
+│
+└── dataset.yaml
+```
+- dataset pipeline
+```
+Dataset
+   │
+   ├── Images
+   │
+   ├── Labels
+   │
+   └── dataset.yaml
+          │
+          ▼
+YOLO Reads Configuration
+          │
+          ▼
+Pairs Images with Labels
+          │
+          ▼
+Loads Training Batches
+          │
+          ▼
+Applies Data Augmentation
+          │
+          ▼
+Feeds Images into the Network
+```
+- YOLO requires a structured dataset with separate images and labels directories.
+- Every image must have a corresponding label file with the same filename.
+- Each object in an image is represented by one line in the label file.
+- The dataset.yaml file defines the dataset paths and class names.
+- Class IDs must remain consistent across the entire dataset.
+- Training, validation, and test sets serve different purposes.
+- Empty label files are valid for images that contain no target objects.
+- A well-organized dataset allows YOLO to automatically load and train on your data.
