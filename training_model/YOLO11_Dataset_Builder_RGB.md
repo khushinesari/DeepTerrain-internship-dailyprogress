@@ -1,13 +1,14 @@
-# YOLO11 Dataset Builder -- Technical Handover Guide
+# YOLO11 Dataset Builder -- 
 
-## Project Overview
+## Overview
 
-This project builds a unified YOLO11 dataset from: - AGV (COCO JSON) -
+This pipeline builds a unified YOLO11 dataset from: - AGV (COCO JSON) -
 MEI (CVAT XML)
 
-Pipeline: Discovery → Reports → Class Mapping → Class IDs → COCO/CVAT
-Conversion → Merge → Split → dataset.yaml → Validation
-
+Pipeline:
+```
+Discovery → Reports → Class Mapping → Class IDs → COCO/CVAT Conversion → Merge → Split → dataset.yaml → Validation
+````
 ## Repository Structure
 
 ``` text
@@ -100,10 +101,12 @@ output/
 
 ## Extending the Pipeline
 
-To add a new dataset: 1. Create a parser under discover/parsers. 2.
-Register it. 3. Populate DatasetInfo. 4. Reuse the remaining pipeline.
+To add a new dataset:
+1. Create a parser under discover/parsers.
+2. Register it.
+3. Populate DatasetInfo.
+4. Reuse the remaining pipeline.
 
-## Handover Notes
-
+## Note
 Always validate Discovery before Conversion. The rest of the pipeline
 assumes DatasetInfo is correct.
