@@ -4,7 +4,7 @@ The following experiments are recommended to evaluate the performance of differe
 
 | Experiment | Model | Image Size | Epochs | Batch Size* | Purpose |
 |------------|-------|-----------:|--------:|------------:|---------|
-| E1 | `yolo11n.pt` | 640 | 100 | 16 | Fast baseline with lowest computational cost |
+| E1 | `yolo11n.pt` | 640 | 50 | 16 | Fast baseline with lowest computational cost |
 | E2 | `yolo11s.pt` | 640 | 100 | 16 | Lightweight model with improved accuracy |
 | E3 | `yolo11m.pt` | 640 | 100 | 16 | Balanced trade-off between speed and accuracy |
 | E4 ⭐ | `yolo11l.pt` | 640 | 100 | 16 | **Recommended model for the AGV + MEI dataset** |
@@ -43,3 +43,17 @@ For the merged **AGV + MEI** dataset (~67k images, 14 classes), the recommended 
 | Cache | Enabled |
 | Learning Rate Scheduler | Cosine Annealing |
 | Early Stopping Patience | `20` epochs |
+
+### experimental models (YOLO11)
+
+The experiments can be performed using different YOLO11 model variants depending on the available hardware and the desired balance between inference speed and detection accuracy.
+
+| Model | Model Size | Performance | Typical Use Case |
+|--------|------------|-------------|------------------|
+| `yolo11n.pt` | Nano | Fastest inference with the lowest computational cost | Initial experiments, debugging, edge devices |
+| `yolo11s.pt` | Small | Improved accuracy with a modest increase in computation | Lightweight deployment and rapid prototyping |
+| `yolo11m.pt` | Medium | Good balance between speed and detection performance | General-purpose object detection |
+| `yolo11l.pt` | Large | Higher accuracy with increased training and inference time | **Recommended for the merged AGV + MEI dataset** |
+| `yolo11x.pt` | Extra Large | Highest detection accuracy with the largest computational requirements | Offline evaluation and high-end GPU systems |
+
+> **Recommended configuration:** `yolo11l.pt` was selected for the final experiments as it provides a good balance between detection accuracy and computational cost for the merged AGV + MEI dataset.
