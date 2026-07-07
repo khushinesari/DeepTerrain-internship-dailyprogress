@@ -38,7 +38,7 @@ For the merged **AGV + MEI** dataset (~67k images, 14 classes), the recommended 
 | Image Size | `640 × 640` |
 | Optimizer | `AdamW` |
 | Initial Learning Rate | `0.001` |
-| Batch Size | `16` (adjust according to GPU memory) |
+| Batch Size | `32` (adjust according to GPU memory) |
 | Mixed Precision | Enabled (`AMP`) |
 | Cache | Enabled |
 | Learning Rate Scheduler | Cosine Annealing |
