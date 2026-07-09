@@ -1,0 +1,90 @@
+{
+  "iteration": 4,
+  "strategy_decision": "route_elimination",
+  "route_weight": 0.5,
+  "coverage_weight": 0.5,
+  "coverage_before_pct": 7.031488092646611,
+  "camera_placed": {
+    "iteration": 4,
+    "candidate_id": 69765,
+    "row": 272.62134675257704,
+    "col": 942.2211366937673,
+    "z_ground": 56.053009033203125,
+    "cam_z": 66.05300903320312,
+    "azimuth_deg": 60.0,
+    "route_score": 1.0,
+    "coverage_score": 0.030878575471287386,
+    "final_score": 0.5154392877356437,
+    "strategy_decision": "route_elimination",
+    "marginal_new_cells": null,
+    "routes_eliminated": 1,
+    "fov_cell_count": 11348
+  },
+  "routes_before": 1,
+  "routes_eliminated": 1,
+  "routes_after": 0,
+  "fov_cell_count": 11348,
+  "total_cameras": 5,
+  "all_scores_ranked": [
+    {
+      "candidate_id": 69765,
+      "final_score": 0.5154392877356437,
+      "route_score": 1.0,
+      "coverage_score": 0.030878575471287386
+    },
+    {
+      "candidate_id": 69673,
+      "final_score": 0.5154134376768689,
+      "route_score": 1.0,
+      "coverage_score": 0.030826875353737647
+    },
+    {
+      "candidate_id": 69844,
+      "final_score": 0.5152379293830815,
+      "route_score": 1.0,
+      "coverage_score": 0.03047585876616309
+    },
+    {
+      "candidate_id": 69670,
+      "final_score": 0.5151222843832992,
+      "route_score": 1.0,
+      "coverage_score": 0.030244568766598458
+    },
+    {
+      "candidate_id": 69843,
+      "final_score": 0.5150175236187905,
+      "route_score": 1.0,
+      "coverage_score": 0.03003504723758109
+    },
+    {
+      "candidate_id": 69840,
+      "final_score": 0.5149562997953764,
+      "route_score": 1.0,
+      "coverage_score": 0.029912599590752754
+    },
+    {
+      "candidate_id": 69917,
+      "final_score": 0.5149426945012844,
+      "route_score": 1.0,
+      "coverage_score": 0.02988538900256868
+    },
+    {
+      "candidate_id": 69921,
+      "final_score": 0.5149345313248291,
+      "route_score": 1.0,
+      "coverage_score": 0.029869062649658235
+    },
+    {
+      "candidate_id": 69672,
+      "final_score": 0.5149154839131003,
+      "route_score": 1.0,
+      "coverage_score": 0.02983096782620053
+    },
+    {
+      "candidate_id": 69590,
+      "final_score": 0.514893715442553,
+      "route_score": 1.0,
+      "coverage_score": 0.029787430885106013
+    }
+  ]
+}
