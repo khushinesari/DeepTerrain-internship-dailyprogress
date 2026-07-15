@@ -159,6 +159,74 @@ Increase Vehicle 3 speed to 40 km/hr
     "timestamp":"2026-07-09T10:30:00"
 }
 ```
+- Temporary JSON Structure
+```
+{
+  "mission": {
+    "mission_name": "Mission_001",
+    "mission_type": "Reconnaissance",
+    "priority": "HIGH",
+    "loop_count": 3,
+
+    "assigned_assets": [
+      {
+        "asset_name": "UAV_01",
+        "asset_type": "Drone",
+
+        "asset_position": {
+          "latitude": 12.9716,
+          "longitude": 77.5946,
+          "altitude": 120
+        },
+
+        "convoy_position": {
+          "latitude": 12.9732,
+          "longitude": 77.5981,
+          "altitude": 0
+        }
+      },
+
+      {
+        "asset_name": "UGV_02",
+        "asset_type": "GroundVehicle",
+
+        "asset_position": {
+          "latitude": 12.9720,
+          "longitude": 77.5960,
+          "altitude": 0
+        },
+
+        "convoy_position": {
+          "latitude": 12.9732,
+          "longitude": 77.5981,
+          "altitude": 0
+        }
+      }
+    ],
+
+    "checkpoints": [
+      {
+        "id": 1,
+        "latitude": 12.9751,
+        "longitude": 77.6025
+      },
+      {
+        "id": 2,
+        "latitude": 12.9780,
+        "longitude": 77.6062
+      }
+    ],
+
+    "objectives": [
+      {
+        "id": 1,
+        "description": "Monitor Warehouse 001",
+        "status": "Pending"
+      }
+    ]
+  }
+}
+```
 - The user never mentioned priority or timestamp, but the agent fills them using defaults or system-generated values.
 
 - This completed form is what gets sent to the control system.
