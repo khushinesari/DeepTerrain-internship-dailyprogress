@@ -16,7 +16,7 @@
 - image_size=1280
 - batch: 32
 ### EXPERIMENT 4
-- model: yolo11n.pt
-- epoch: 100
+- model: yolo11l.pt
+- epoch: 50
 - image_size=640
 - batch: 32
