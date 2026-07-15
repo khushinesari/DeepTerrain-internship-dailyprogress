@@ -87,35 +87,31 @@ The agent asks:
 ```Is the user trying to retrieve information or change something?```
 The AI agent needs to determine which operation should be executed.
 Natural language can express the same intent in many different ways.
-- Examples:```Intent = FETCH```
+- Examples:```Intent = FETCH/GET```
 ```
-Show me...
+Show mission priority.
 
-Fetch...
+Get current checkpoints.
 
-Display...
+Display convoy position.
 
-Get...
+What is the loop count?
 
-Can I see...
+Where is UAV_01?
 
-Give me...
+Show all objectives.
 ```
-- Examples:```Intent = POST```
+- Examples:```Intent = POST/PATCH```
 ```
-Increase...
+Increase priority.
 
-Reduce...
+Move UAV_01.
 
-Turn off...
+Change loop count to 5.
 
-Open...
+Update objective 2.
 
-Close...
-
-Set...
-
-Update...
+Modify convoy position.
 
 ```
 ## Entity Extraction
