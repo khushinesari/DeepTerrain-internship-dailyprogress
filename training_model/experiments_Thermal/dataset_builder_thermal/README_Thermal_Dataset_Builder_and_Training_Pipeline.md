@@ -142,17 +142,7 @@ experiments/
 
 ## Common Issues
 
--   Invalid class IDs
--   Invalid YOLO coordinates
 -   Empty labels
--   Dataset.yaml mismatch
 -   Duplicate images
--   CUDA device-side asserts caused by label inconsistencies
 
-## Future Improvements
 
--   CLAHE preprocessing
--   Hyperparameter tuning
--   RT-DETR comparison
--   RGB-Thermal fusion
--   Terrain-aware perception
