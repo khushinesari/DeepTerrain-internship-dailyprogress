@@ -46,13 +46,23 @@ class ResponseParser:
 
         return response[start:end]
 
-    def parse(self, response: str):
+    def parse(self, response):
 
         cleaned = self.clean_response(response)
 
-        json_string = self.extract_json(cleaned)
+        print("\n----- Cleaned Response -----\n")
+        print(cleaned)
+        print("\n----------------------------\n")
 
-        parsed = json.loads(json_string)
+        try:
+            parsed = json.loads(cleaned)
+
+        except json.JSONDecodeError as e:
+
+            print("\nJSON ERROR")
+            print(e)
+
+            raise
 
         self.save_response(parsed)
 

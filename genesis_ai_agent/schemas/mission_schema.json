@@ -23,8 +23,8 @@
             }
         ],
 
-        "checkpoints": [],
+        "checkpoints": [ {}],
 
-        "objectives": []
+        "objectives": [""]
     }
 }

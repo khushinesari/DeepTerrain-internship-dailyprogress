@@ -1,0 +1,89 @@
+{
+    "mission": {
+        "mission_name": "Border Surveillance Alpha",
+        "mission_type": "Reconnaissance",
+        "priority": "HIGH",
+        "loop_count": 3,
+
+        "assigned_assets": [
+            {
+                "asset_name": "AGV_01",
+                "asset_type": "UGV",
+
+                "asset_position": {
+                    "latitude": 12.971598,
+                    "longitude": 77.594566,
+                    "altitude": 892.4
+                },
+
+                "convoy_position": {
+                    "latitude": 12.972105,
+                    "longitude": 77.595021,
+                    "altitude": 892.1
+                }
+            },
+
+            {
+                "asset_name": "AGV_02",
+                "asset_type": "UGV",
+
+                "asset_position": {
+                    "latitude": 12.972432,
+                    "longitude": 77.596781,
+                    "altitude": 891.8
+                },
+
+                "convoy_position": {
+                    "latitude": 12.972105,
+                    "longitude": 77.595021,
+                    "altitude": 892.1
+                }
+            },
+
+            {
+                "asset_name": "UAV_01",
+                "asset_type": "UAV",
+
+                "asset_position": {
+                    "latitude": 12.974350,
+                    "longitude": 77.598730,
+                    "altitude": 120.5
+                },
+
+                "convoy_position": {
+                    "latitude": 12.972105,
+                    "longitude": 77.595021,
+                    "altitude": 892.1
+                }
+            }
+        ],
+
+        "checkpoints": [
+            {
+                "checkpoint_id": 1,
+                "latitude": 12.973200,
+                "longitude": 77.596200,
+                "altitude": 891.9
+            },
+            {
+                "checkpoint_id": 2,
+                "latitude": 12.974800,
+                "longitude": 77.598900,
+                "altitude": 892.3
+            },
+            {
+                "checkpoint_id": 3,
+                "latitude": 12.976100,
+                "longitude": 77.600500,
+                "altitude": 893.0
+            }
+        ],
+
+        "objectives": [
+            "Escort convoy through designated route",
+            "Continuously monitor asset locations",
+            "Detect unauthorized intrusions",
+            "Report anomalies to command center"
+        ]
+    }
+}

@@ -1,8 +1,19 @@
 {
     "intent": "",
     "target": "",
-    "query": {},
+
+    "query": {
+        "requested_fields": [],
+        "operator_request": ""
+    },
+
+    "response_data": {},
+
     "mission_update": {},
+
+    "mission_llmoutput": {},
+
     "missing_information": [],
+
     "reason": ""
 }

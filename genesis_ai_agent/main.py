@@ -5,6 +5,7 @@ from modules.qwen_engine import QwenEngine
 from modules.parser import ResponseParser
 from modules.response_formatter import ResponseFormatter
 from modules.tts_engine import TTSEngine
+from modules.mission_resolver import MissionResolver
 from config import INPUT_AUDIO
 
 def main():
@@ -22,6 +23,7 @@ def main():
     llm = QwenEngine()
     parser = ResponseParser()
     formatter = ResponseFormatter()
+    resolver = MissionResolver()
     tts = TTSEngine()
 
     # -------------------------------------------------
@@ -70,6 +72,7 @@ def main():
     raw_response, inference_time = llm.generate(prompt)
 
     print("\nRAW RESPONSE:\n")
+
     print(raw_response)
 
     print(f"\nInference Time: {inference_time:.2f} seconds")
@@ -83,6 +86,14 @@ def main():
     parsed = parser.parse(raw_response)
 
     print("Parsed Successfully.")
+    # -------------------------------------------------
+    # Resolve Mission Values
+    # -------------------------------------------------
+
+    print("\nResolving Mission Fields...\n")
+
+    parsed = resolver.resolve(parsed)
+
 
     # -------------------------------------------------
     # Format Response for Speech

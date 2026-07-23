@@ -22,36 +22,36 @@ class ResponseFormatter:
     # GET Formatting
     # --------------------------------------------------
 
-    def _format_get(self, parsed: dict) -> str:
+    def _format_get(self, parsed):
 
-        query = parsed.get("query", {})
+        data = parsed.get("response_data", {})
 
-        if not query:
-            return "No information was returned."
+        if not data:
+            return "No information found."
 
-        lines = []
+        sentences = []
 
-        for key, value in query.items():
+        for field, value in data.items():
 
-            pretty_key = key.replace("_", " ").title()
+            name = field.split(".")[-1].replace("_", " ").title()
 
-            if isinstance(value, dict):
+            if isinstance(value, list):
 
-                lines.append(f"{pretty_key}:")
+                sentences.append(f"{name}:")
 
-                for k, v in value.items():
-                    lines.append(f"{k.replace('_',' ').title()} is {v}.")
+                for item in value:
 
-            elif isinstance(value, list):
+                    sentences.append(str(item))
 
-                value = ", ".join(map(str, value))
-                lines.append(f"{pretty_key} is {value}.")
+            elif isinstance(value, dict):
+
+                sentences.append(f"{name} is {value}")
 
             else:
 
-                lines.append(f"{pretty_key} is {value}.")
+                sentences.append(f"{name} is {value}.")
 
-        return " ".join(lines)
+        return " ".join(sentences)
 
     # --------------------------------------------------
     # PATCH Formatting

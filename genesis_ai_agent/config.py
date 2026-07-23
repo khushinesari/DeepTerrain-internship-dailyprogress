@@ -124,6 +124,9 @@ SYSTEM_PROMPT_FILE = PROMPTS_DIR / "system_prompt.txt"
 MISSION_SCHEMA_FILE = SCHEMA_DIR / "mission_schema.json"
 
 COMMAND_SCHEMA_FILE = SCHEMA_DIR / "command_schema.json"
+DATA_DIR = BASE_DIR / "data"
+
+MISSION_CURRENT = DATA_DIR / "mission_current.json"
 # =====================================================
 # Piper
 # =====================================================
