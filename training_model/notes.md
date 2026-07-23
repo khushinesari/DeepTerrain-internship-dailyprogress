@@ -403,3 +403,20 @@ Feeds Images into the Network
 - Training, validation, and test sets serve different purposes.
 - Empty label files are valid for images that contain no target objects.
 - A well-organized dataset allows YOLO to automatically load and train on your data.
+### NOTES
+- Seed:The seed initializes the random number generators used during training.It influences:
+
+   - Initial weight initialization
+   - Order of shuffled training images
+   - Data augmentation randomness
+   - Mosaic image selection
+   - MixUp augmentation
+   - Random cropping
+   - Batch composition
+- Weight Decay
+
+   - Weight decay is a regularization technique that discourages the model from learning excessively large weights.
+
+   - Conceptually, the optimizer minimizes not just the training loss, but also a penalty on large weights.
+
+   - A larger weight decay pushes the model toward simpler parameter values, which often improves performance on unseen data.
