@@ -1,1 +1,1 @@
-## output : mission updated successfully , mission failed. 
+## output : mission details being read out. 
