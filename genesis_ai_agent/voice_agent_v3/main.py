@@ -146,7 +146,7 @@ def main():
             # Format Response
             # -------------------------------------------------
 
-            reply = response_formatter.format(result)
+            reply = response_formatter.format(result,command)
 
             print("\nGenesis :", reply)
 
