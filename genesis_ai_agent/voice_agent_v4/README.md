@@ -254,12 +254,7 @@ Give current mission details
 Response
 
 ```
-The current mission is Mission-001.
-It is a Surveillance mission and is currently Active.
-The mission priority is High with a loop count of 2.
-There is 1 assigned asset,
-3 checkpoints,
-and 2 objectives.
+The current mission is Mission testing in site 4. It is a surveillance mission and is currently pending. The mission priority is medium with a loop count of 4. There is 1 assigned asset, 5 checkpoints, and 2 objectives.
 ```
 
 ---
@@ -289,13 +284,7 @@ Give objectives
 Response
 
 ```
-There are currently two objectives.
-
-Secure checkpoint B,
-which secures checkpoint A.
-
-Scan perimeter,
-which scans the surrounding area.
+There are currently 2 objectives. Secure checkpoint A, which Secure and monitor checkpoint A. Scan perimeter, which Scan the surrounding perimeter for threats.
 ```
 
 ---
