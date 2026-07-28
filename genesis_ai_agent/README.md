@@ -1,5 +1,5 @@
 # AIM
-### building an AI agent add on to the existing genesis control system where the manual entry for filling the form is replaced by the agent which works on voice commands 
+### Building an AI agent add on to the existing genesis control system where the manual entry for filling the form is replaced by the agent which works on voice commands 
 ## Architecture 
 ```
 Microphone
