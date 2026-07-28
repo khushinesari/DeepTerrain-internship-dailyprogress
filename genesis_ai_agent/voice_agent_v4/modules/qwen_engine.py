@@ -79,7 +79,7 @@ class QwenEngine:
             self.model = self.model.to(self.device)
 
         self.model.eval()
-
+        self.model_name = QWEN_MODEL
         print("Qwen Loaded Successfully.\n")
 
     #########################################################
@@ -173,7 +173,52 @@ class QwenEngine:
         # command.setdefault("confidence", 1.0)
 
         return command
+    #########################################################
 
+    def _print_llm_stats(
+        self,
+        input_tokens: int,
+        output_tokens: int,
+        latency: float,
+        ):
+
+        total_tokens = input_tokens + output_tokens
+
+        # Qwen2.5 supports a very large context window.
+        # Adjust if you use another model.
+        context_window = 2097152
+
+        context_percent = (
+            total_tokens /
+            context_window
+        ) * 100
+
+        tokens_per_second = (
+            output_tokens / latency
+            if latency > 0
+            else 0
+        )
+
+        print("\n" + "=" * 80)
+        print("GENESIS LLM STATISTICS")
+        print("=" * 80)
+
+        print(f"Model               : {self.model_name}")
+        print(f"Device              : {self.device}")
+
+        if self.device.type == "cuda":
+            print(
+                f"GPU                 : {torch.cuda.get_device_name(0)}"
+            )
+
+        print(f"Prompt Tokens       : {input_tokens}")
+        print(f"Completion Tokens   : {output_tokens}")
+        print(f"Total Tokens        : {total_tokens}")
+        print(f"Inference Time      : {latency:.2f} sec")
+        print(f"Generation Speed    : {tokens_per_second:.2f} tokens/sec")
+        print(f"Context Used        : {context_percent:.5f}%")
+
+        print("=" * 80)
     #########################################################
 
     def infer(self, prompt: str):
@@ -182,7 +227,7 @@ class QwenEngine:
         Perform inference and return structured command.
         """
 
-        start = time.time()
+        start = time.perf_counter()
 
         messages = [
             {
@@ -201,7 +246,7 @@ class QwenEngine:
             text,
             return_tensors="pt"
         ).to(self.device)
-
+        input_tokens = model_inputs.input_ids.shape[1]
         with torch.no_grad():
 
             generated_ids = self.model.generate(
@@ -210,7 +255,8 @@ class QwenEngine:
                 temperature=TEMPERATURE,
                 top_p=TOP_P,
                 top_k=TOP_K,
-                do_sample=True,
+                do_sample=TEMPERATURE > 0,
+                eos_token_id=self.tokenizer.eos_token_id,
                 pad_token_id=self.tokenizer.eos_token_id
             )
 
@@ -218,16 +264,13 @@ class QwenEngine:
             :,
             model_inputs.input_ids.shape[1]:
         ]
-
+        output_tokens = generated_ids.shape[1]
         response = self.tokenizer.batch_decode(
             generated_ids,
             skip_special_tokens=True
         )[0]
 
-        latency = round(
-            time.time() - start,
-            2
-        )
+        latency = time.perf_counter() - start
 
         # --------------------------------------------------
         # Save raw response for debugging
@@ -263,8 +306,26 @@ class QwenEngine:
             )
 
         command = self._validate(command)
+        self._print_llm_stats(
+        input_tokens=input_tokens,
+        output_tokens=output_tokens,
+        latency=latency,
+        )
 
-        return command, latency
+        stats = {
+            "latency": latency,
+            "input_tokens": input_tokens,
+            "output_tokens": output_tokens,
+            "total_tokens": input_tokens + output_tokens,
+            "tokens_per_second": (
+                output_tokens / latency
+                if latency > 0
+                else 0
+            ),
+        }
+
+        return command, stats
+        
     
 
 
@@ -288,9 +349,12 @@ User:
 Set loop count to 3.
 """
 
-    command, latency = qwen_engine.infer(prompt)
+    command, stats = qwen_engine.infer(prompt)
 
-    print("\nLatency :", latency, "seconds\n")
+    print()
+
+    for key, value in stats.items():
+        print(f"{key:20} : {value}")
 
     print(json.dumps(
         command,

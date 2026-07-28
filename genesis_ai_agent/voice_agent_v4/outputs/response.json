@@ -1,8 +1,7 @@
 {
-    "intent":"PATCH",
-    "field":"loop_count",
+    "intent":"GET",
+    "field":"objectives",
     "target":"",
-    "value":5,
     "field_found":true,
     "target_found":true,
     

@@ -16,11 +16,18 @@ class MissionUpdater:
     # Only these mission fields are allowed to be PATCHed
     MUTABLE_FIELDS = {
         "priority",
-        "loop_count"
+        "loop_count",
+        "role"
     }
+    def _find_asset(self, assets, asset_name):
 
+        for asset in assets:
+            if asset.get("asset_name", "").lower() == asset_name.lower():
+                return asset
+
+        return None
     # =========================================================
-
+    
     def update(self, mission: dict, command: dict):
 
         updated = deepcopy(mission)
@@ -34,19 +41,70 @@ class MissionUpdater:
         print("=" * 80)
         print(json.dumps(mission, indent=4, ensure_ascii=False))
         print("=" * 80)
-
+    
         # -----------------------------------------------------
-        # Asset updates are currently not supported
+        # Asset Role Update
         # -----------------------------------------------------
 
         if target != "":
 
+            if field != "role":
+
+                return {
+                    "success": False,
+                    "message": (
+                    "Only the asset role can be updated."
+                    )
+                }
+
+            assets = updated.get("assigned_assets", [])
+
+            asset = self._find_asset(assets, target)
+
+            if asset is None:
+
+                return {
+                    "success": False,
+                    "message": f"Asset '{target}' not found."
+                }
+
+            print(f"\nUpdating role of '{target}'...")
+
+            # Update local mission copy
+            asset["role"] = value
+
+            print("\n" + "=" * 80)
+            print("UPDATED MISSION")
+            print("=" * 80)
+            print(json.dumps(updated, indent=4, ensure_ascii=False))
+            print("=" * 80)
+
+            # Backend payload
+            patch_payload = {
+                "role": value
+            }
+
+            print("\n" + "=" * 80)
+            print("PATCH PAYLOAD")
+            print("=" * 80)
+            print(json.dumps(patch_payload, indent=4, ensure_ascii=False))
+            print("=" * 80)
+
+            response = mission_api.patch_mission(patch_payload)
+
+            print("\n" + "=" * 80)
+            print("PATCH RESPONSE")
+            print("=" * 80)
+            print(json.dumps(response, indent=4, ensure_ascii=False))
+            print("=" * 80)
+
             return {
-                "success": False,
-                "message": (
-                    "Asset updates are currently disabled. "
-                    "Only mission fields can be updated."
-                )
+                "success": response.get("success", False),
+                "message": response.get(
+                "message",
+                f"Role of {target} updated successfully."
+                ),
+                "mission": updated
             }
 
         # -----------------------------------------------------
@@ -105,11 +163,11 @@ class MissionUpdater:
 
         response = mission_api.patch_mission(patch_payload)
 
-        print("\n" + "=" * 80)
+        print("\n" + "=" * 50)
         print("PATCH RESPONSE")
-        print("=" * 80)
+        print("=" * 50)
         print(json.dumps(response, indent=4, ensure_ascii=False))
-        print("=" * 80)
+        print("=" * 50)
 
         return {
             "success": response.get("success", False),

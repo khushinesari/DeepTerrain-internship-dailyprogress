@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+python-multipart
+
+faster-whisper
+ollama
+
+pydantic
+
+orjson
+
+numpy
+
+soundfile
