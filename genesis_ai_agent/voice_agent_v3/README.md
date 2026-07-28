@@ -1,11 +1,10 @@
-## output : mission details being read out speciffically loop count and priority , mission name .
 # Genesis Voice Agent V3
 
 ## Overview
 
 Genesis Voice Agent V3 is an offline AI-powered voice assistant designed for mission management. This version focuses on retrieving and updating mission-level information using natural voice commands. It integrates local speech recognition, a locally hosted Large Language Model (LLM), backend mission APIs, and offline text-to-speech to provide a complete voice-controlled mission management experience.
 
-Unlike later versions, V3 is limited to mission-level operations and does not support querying or modifying assets, checkpoints, or objectives.
+V3 is limited to mission-level operations and does not support querying or modifying assets, checkpoints, or objectives.
 
 ---
 
