@@ -560,4 +560,98 @@ Update the API endpoints and verify the Piper executable and voice model paths.
 ```bash
 python main.py
 ```
+## Installing Piper TTS
 
+Genesis Voice Agent uses **Piper**, an offline text-to-speech (TTS) engine, for generating spoken responses.
+
+### Step 1: Download Piper
+
+Download the latest **Windows x64** release from the official Piper GitHub releases page:
+
+**Official Releases:**  
+https://github.com/rhasspy/piper/releases
+
+Download the latest Windows ZIP (for example, `piper_windows_amd64.zip`) and extract it.
+
+After extraction, place the contents in the following directory:
+
+```text
+voice_agent_v4/
+│
+├── piper/
+│   └── piper/
+│       ├── piper.exe
+│       ├── *.dll
+│       ├── espeak-ng-data/
+│       └── ...
+```
+
+---
+
+### Step 2: Download a Voice Model
+
+Official Piper voice models are available at:
+
+**Hugging Face Repository:**  
+https://huggingface.co/rhasspy/piper-voices
+
+For this project, download the following files:
+
+- `en_US-amy-medium.onnx`
+- `en_US-amy-medium.onnx.json`
+
+Direct voice page:
+
+https://huggingface.co/rhasspy/piper-voices/tree/main/en/en_US/amy/medium
+
+Place both files inside:
+
+```text
+voice_agent_v4/
+│
+└── voices/
+    ├── en_US-amy-medium.onnx
+    └── en_US-amy-medium.onnx.json
+```
+
+> **Important:** Piper requires **both** the `.onnx` model file and the corresponding `.onnx.json` configuration file.
+
+---
+
+### Step 3: Verify the Folder Structure
+
+Your project should now look like:
+
+```text
+voice_agent_v4/
+│
+├── piper/
+│   └── piper/
+│       ├── piper.exe
+│       ├── *.dll
+│       └── ...
+│
+├── voices/
+│   ├── en_US-amy-medium.onnx
+│   └── en_US-amy-medium.onnx.json
+```
+
+---
+
+### Step 4: Test Piper Installation (Optional)
+
+Open a terminal in the project root and run:
+
+```bash
+echo Hello Genesis | piper\piper\piper.exe --model voices\en_US-amy-medium.onnx --output_file audio\output\test.wav
+```
+
+If the installation is successful, a file named `test.wav` will be created in the `audio/output/` directory containing the synthesized speech.
+
+---
+
+### References
+
+- Piper GitHub: https://github.com/rhasspy/piper
+- Piper Releases: https://github.com/rhasspy/piper/releases
+- Piper Voices: https://huggingface.co/rhasspy/piper-voices
