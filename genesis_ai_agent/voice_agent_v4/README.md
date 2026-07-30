@@ -495,8 +495,38 @@ Planned improvements include
 ---
 # Execution 
 ```
-git clone https://github.com/<username>/<repo>.git
+https://github.com/khushinesari/DeepTerrain-internship-dailyprogress.git
 
 cd DeepTerrain-internship-dailyprogress/genesis_ai_agent/voice_agent_v4
+
+```
+## Quick Start
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/khushinesari/DeepTerrain-internship-dailyprogress.git
+```
+
+### 2. Navigate to the project
+
+```bash
+cd DeepTerrain-internship-dailyprogress/genesis_ai_agent/voice_agent_v4
+```
+
+### 3. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Configure `config.py`
+
+Update the API endpoints and verify the Piper executable and voice model paths.
+
+### 5. Run the application
+
+```bash
+python main.py
 ```
 
