@@ -12,3 +12,10 @@ orjson
 numpy
 
 soundfile
+
+torch>=2.2.0
+transformers>=4.49.0
+accelerate>=1.2.0
+huggingface-hub>=0.29.0
+sentencepiece>=0.2.0
+safetensors>=0.5.2
