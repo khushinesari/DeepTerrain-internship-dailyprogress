@@ -389,23 +389,54 @@ The assistant finally speaks the generated response.
 # Current Project Structure
 
 ```
-Genesis_V2
+voice_agent_v4/
 │
 ├── audio/
+│   ├── input.wav
+│   └── output/
+│       └── output.wav
 │
-├── models/
+├── data/
+│   └── mission_current.json
 │
 ├── modules/
 │   ├── mission_api.py
+│   ├── mission_cache.py
 │   ├── mission_resolver.py
 │   ├── mission_updater.py
 │   ├── prompt_builder.py
 │   ├── qwen_engine.py
+│   ├── recorder.py
 │   ├── response_formatter.py
+│   ├── tts_engine.py
+│   ├── whisper_engine.py
+│   └── __init__.py
 │
-├── recorder.py
+├── outputs/
+│   ├── transcript.txt
+│   └── response.json
+│
+├── piper/
+│   └── piper/
+│       ├── piper.exe
+│       ├── *.dll
+│       └── ...
+│
+├── prompts/
+│   └── system_prompt.txt
+│
+├── tests/
+│   ├── __init__.py
+│   ├── test_cache.py
+│   ├── test_prompt_builder.py
+│   └── test_tts.py
+│
+├── voices/
+│   ├── en_US-amy-medium.onnx.json
+│   └── en_US-amy-medium.onnx
+├── config.py
 ├── main.py
-└── system_prompt.txt
+└── requirements.txt
 ```
 
 ---
