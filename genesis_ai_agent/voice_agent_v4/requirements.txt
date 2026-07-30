@@ -19,3 +19,4 @@ accelerate>=1.2.0
 huggingface-hub>=0.29.0
 sentencepiece>=0.2.0
 safetensors>=0.5.2
+piper-tts
