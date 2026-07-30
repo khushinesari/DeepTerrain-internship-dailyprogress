@@ -1,18 +1,15 @@
 fastapi
 uvicorn
 python-multipart
-
 faster-whisper
+ctranslate2>=4.6.0
 ollama
-
 pydantic
-
 orjson
-
 numpy
-
+scipy
 soundfile
-
+sounddevice>=0.5.1
 torch>=2.2.0
 transformers>=4.49.0
 accelerate>=1.2.0
@@ -20,3 +17,4 @@ huggingface-hub>=0.29.0
 sentencepiece>=0.2.0
 safetensors>=0.5.2
 piper-tts
+requests>=2.32.0
