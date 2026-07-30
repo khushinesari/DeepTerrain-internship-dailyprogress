@@ -491,4 +491,12 @@ Planned improvements include
 - Prompt enhancement 
 - Voice interruption handling
 - Naming the agent and checking for response (example : Hey, siri ....)
-- caching the details of first get method api call for future use 
+- caching the details of first get method api call for future use
+---
+# Execution 
+```
+git clone https://github.com/<username>/<repo>.git
+
+cd DeepTerrain-internship-dailyprogress/genesis_ai_agent/voice_agent_v4
+```
+
