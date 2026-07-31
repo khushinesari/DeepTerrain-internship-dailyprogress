@@ -1,8 +1,12 @@
 """
 mission_updater.py
+Updated for session-cache architecture.
 
-Applies updates to the current mission and PATCHes only
-the mutable mission fields to the backend.
+Changes:
+- Uses cached mission passed from main().
+- Sends only PATCH payload.
+- Uses backend returned mission.
+- Caller should replace mission_cache with returned mission.
 """
 
 import json
@@ -13,21 +17,18 @@ from modules.mission_api import mission_api
 
 class MissionUpdater:
 
-    # Only these mission fields are allowed to be PATCHed
     MUTABLE_FIELDS = {
         "priority",
         "loop_count",
-        "role"
+        "role",
     }
-    def _find_asset(self, assets, asset_name):
 
+    def _find_asset(self, assets, asset_name):
         for asset in assets:
             if asset.get("asset_name", "").lower() == asset_name.lower():
                 return asset
-
         return None
-    # =========================================================
-    
+
     def update(self, mission: dict, command: dict):
 
         updated = deepcopy(mission)
@@ -36,149 +37,88 @@ class MissionUpdater:
         value = command["value"]
         target = command.get("target", "")
 
-        print("\n" + "=" * 80)
-        print("CURRENT MISSION")
-        print("=" * 80)
-        print(json.dumps(mission, indent=4, ensure_ascii=False))
-        print("=" * 80)
-    
-        # -----------------------------------------------------
-        # Asset Role Update
-        # -----------------------------------------------------
-
-        if target != "":
+        # Asset role update
+        if target:
 
             if field != "role":
-
                 return {
                     "success": False,
-                    "message": (
-                    "Only the asset role can be updated."
-                    )
+                    "message": "Only asset role can be updated."
                 }
 
-            assets = updated.get("assigned_assets", [])
-
-            asset = self._find_asset(assets, target)
+            asset = self._find_asset(
+                updated.get("assigned_assets", []),
+                target
+            )
 
             if asset is None:
-
                 return {
                     "success": False,
                     "message": f"Asset '{target}' not found."
                 }
 
-            print(f"\nUpdating role of '{target}'...")
-
-            # Update local mission copy
-            asset["role"] = value
-
-            print("\n" + "=" * 80)
-            print("UPDATED MISSION")
-            print("=" * 80)
-            print(json.dumps(updated, indent=4, ensure_ascii=False))
-            print("=" * 80)
-
-            # Backend payload
             patch_payload = {
+                "asset_name": target,
                 "role": value
             }
 
-            print("\n" + "=" * 80)
-            print("PATCH PAYLOAD")
-            print("=" * 80)
-            print(json.dumps(patch_payload, indent=4, ensure_ascii=False))
-            print("=" * 80)
+        else:
 
-            response = mission_api.patch_mission(patch_payload)
+            if field not in updated:
+                return {
+                    "success": False,
+                    "message": f"Mission field '{field}' not found."
+                }
 
-            print("\n" + "=" * 80)
-            print("PATCH RESPONSE")
-            print("=" * 80)
-            print(json.dumps(response, indent=4, ensure_ascii=False))
-            print("=" * 80)
+            if field not in self.MUTABLE_FIELDS:
+                return {
+                    "success": False,
+                    "message": f"'{field}' is immutable."
+                }
 
-            return {
-                "success": response.get("success", False),
-                "message": response.get(
-                "message",
-                f"Role of {target} updated successfully."
-                ),
-                "mission": updated
+            patch_payload = {
+                field: value
             }
 
-        # -----------------------------------------------------
-        # Validate field exists
-        # -----------------------------------------------------
-
-        if field not in updated:
-
-            return {
-                "success": False,
-                "message": f"Mission field '{field}' not found."
-            }
-
-        # -----------------------------------------------------
-        # Validate field is mutable
-        # -----------------------------------------------------
-
-        if field not in self.MUTABLE_FIELDS:
-
-            return {
-                "success": False,
-                "message": (
-                    f"'{field}' is immutable and cannot be PATCHed."
-                )
-            }
-
-        # -----------------------------------------------------
-        # Update local mission
-        # -----------------------------------------------------
-
-        updated[field] = value
-
-        print("\n" + "=" * 80)
-        print("UPDATED MISSION")
-        print("=" * 80)
-        print(json.dumps(updated, indent=4, ensure_ascii=False))
-        print("=" * 80)
-
-        # -----------------------------------------------------
-        # Build PATCH payload
-        # -----------------------------------------------------
-
-        patch_payload = {
-            field: value
-        }
-
-        print("\n" + "=" * 80)
+        print("=" * 60)
         print("PATCH PAYLOAD")
-        print("=" * 80)
-        print(json.dumps(patch_payload, indent=4, ensure_ascii=False))
-        print("=" * 80)
-
-        # -----------------------------------------------------
-        # Send PATCH request
-        # -----------------------------------------------------
+        print(json.dumps(patch_payload, indent=4))
+        print("=" * 60)
 
         response = mission_api.patch_mission(patch_payload)
 
-        print("\n" + "=" * 50)
+        print("=" * 60)
         print("PATCH RESPONSE")
-        print("=" * 50)
-        print(json.dumps(response, indent=4, ensure_ascii=False))
-        print("=" * 50)
+        print(json.dumps(response, indent=4))
+        print("=" * 60)
+
+        if not response.get("success", False):
+            return response
+
+        data = response.get("data", {})
+
+        if not data.get("success", False):
+            return {
+                "success": False,
+                "message": data.get("message", "PATCH failed.")
+            }
+
+        updated_mission = data.get("mission")
+
+        if updated_mission is None:
+            return {
+                "success": False,
+                "message": "Backend did not return updated mission."
+            }
 
         return {
-            "success": response.get("success", False),
-            "message": response.get(
+            "success": True,
+            "message": data.get(
                 "message",
                 "Mission updated successfully."
             ),
-            "mission": updated
+            "mission": updated_mission
         }
 
-
-# ============================================================
 
 mission_updater = MissionUpdater()

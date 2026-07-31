@@ -1,88 +1,59 @@
 """
-=========================================================
-Genesis Voice Agent V2
-=========================================================
-
-Pipeline
-
-Voice
-    ↓
-Whisper
-    ↓
-MissionAPI
-    ↓
-PromptBuilder
-    ↓
-QwenEngine
-    ↓
-MissionUpdater / MissionResolver
-    ↓
-ResponseFormatter
-    ↓
-Piper
-=========================================================
+Updated main.py for Genesis Voice Agent V5.1
+Includes complete pipeline statistics.
 """
 
-import json
 import time
 
 from modules.recorder import recorder
 from modules.whisper_engine import whisper_engine
 from modules.mission_api import mission_api
+from modules.mission_cache import mission_cache
 from modules.prompt_builder import prompt_builder
 from modules.qwen_engine import qwen_engine
 from modules.mission_updater import mission_updater
 from modules.mission_resolver import mission_resolver
 from modules.response_formatter import response_formatter
 from modules.tts_engine import tts
-
 from config import INPUT_AUDIO
 
-
-# =========================================================
-
-def print_pipeline_stats(stats):
-
-    print("\n")
-    print("=" * 80)
-    print("GENESIS PIPELINE METRICS")
-    print("=" * 80)
-
-    print(f"Recording           : {stats['record']:.2f} sec")
-    print(f"Whisper STT         : {stats['whisper']:.2f} sec")
-    print(f"Mission GET API     : {stats['mission_get']:.2f} sec")
-    print(f"Prompt Builder      : {stats['prompt']:.2f} sec")
-    print(f"LLM Inference       : {stats['llm']:.2f} sec")
-    print(f"Mission Processing  : {stats['mission_process']:.2f} sec")
-    print(f"Response Formatter  : {stats['formatter']:.2f} sec")
-    print(f"Piper TTS           : {stats['tts']:.2f} sec")
-
-    print("-" * 80)
-
-    print(f"Total Pipeline Time : {stats['total']:.2f} sec")
-
-    print("=" * 80)
-
-
-# =========================================================
 
 def main():
 
     print("=" * 70)
-    print("Genesis Voice Agent V2")
+    print("Genesis Voice Agent V5.1")
     print("=" * 70)
 
-    while True:
+    # ---------------------- Startup ---------------------- #
 
-        try:
+    startup_start = time.perf_counter()
 
-            pipeline_start = time.perf_counter()
+    response = mission_api.get_current_mission()
+
+    startup_time = time.perf_counter() - startup_start
+
+    if not response["success"]:
+        raise RuntimeError(response["message"])
+
+    mission_cache.initialize(response["mission"])
+
+    print(f"Mission loaded successfully.")
+    print(f"Startup Time : {startup_time:.3f} sec")
+    print("=" * 70)
+
+    interaction = 1
+
+    try:
+
+        while True:
+
+            print(f"\nInteraction #{interaction}")
+
+            total_start = time.perf_counter()
 
             # -------------------------------------------------
-            # Record Audio
+            # Recording
             # -------------------------------------------------
-
-            print("\nListening...")
 
             t0 = time.perf_counter()
 
@@ -91,7 +62,7 @@ def main():
             record_time = time.perf_counter() - t0
 
             # -------------------------------------------------
-            # Speech → Text
+            # Whisper
             # -------------------------------------------------
 
             t0 = time.perf_counter()
@@ -101,44 +72,18 @@ def main():
             whisper_time = time.perf_counter() - t0
 
             if not transcript.strip():
-
                 print("No speech detected.")
-
                 continue
 
-            print(f"\nUser : {transcript}")
-
             # -------------------------------------------------
-            # Fetch Mission
+            # Cache Read
             # -------------------------------------------------
 
             t0 = time.perf_counter()
 
-            mission_response = mission_api.get_current_mission()
+            current_mission = mission_cache.get()
 
-            mission_get_time = time.perf_counter() - t0
-
-            if not mission_response["success"]:
-
-                print(mission_response["message"])
-
-                continue
-
-            current_mission = mission_response["mission"]
-
-            print("\n" + "=" * 80)
-            print("CURRENT MISSION LOADED FROM BACKEND")
-            print("=" * 80)
-
-            print(
-                json.dumps(
-                    current_mission,
-                    indent=4,
-                    ensure_ascii=False,
-                )
-            )
-
-            print("=" * 80)
+            cache_time = time.perf_counter() - t0
 
             # -------------------------------------------------
             # Prompt Builder
@@ -148,40 +93,28 @@ def main():
 
             prompt = prompt_builder.build_prompt(
                 transcript=transcript,
-                current_mission=current_mission,
+                current_mission=current_mission
             )
 
             prompt_time = time.perf_counter() - t0
 
             # -------------------------------------------------
-            # LLM
-            # -------------------------------------------------
-
-            print("\nGenerating response using Qwen2.5...\n")
-
-            command, llm_stats = qwen_engine.infer(prompt)
-
-            llm_time = llm_stats["latency"]
-
-            print("\nLLM Command")
-            print(command)
-
-            # -------------------------------------------------
-            # Execute Intent
+            # Qwen
             # -------------------------------------------------
 
             t0 = time.perf_counter()
 
-            intent = command["intent"].upper()
+            command, _ = qwen_engine.infer(prompt)
 
-            if intent == "PATCH":
+            qwen_time = time.perf_counter() - t0
 
-                result = mission_updater.update(
-                    current_mission,
-                    command
-                )
+            # -------------------------------------------------
+            # Mission Processing
+            # -------------------------------------------------
 
-            elif intent == "GET":
+            t0 = time.perf_counter()
+
+            if command["intent"].upper() == "GET":
 
                 result = mission_resolver.resolve(
                     current_mission,
@@ -190,12 +123,15 @@ def main():
 
             else:
 
-                result = {
-                    "success": False,
-                    "message": f"Unsupported intent '{intent}'."
-                }
+                result = mission_updater.update(
+                    current_mission,
+                    command
+                )
 
-            mission_process_time = time.perf_counter() - t0
+                if result.get("success") and result.get("mission"):
+                    mission_cache.replace(result["mission"])
+
+            mission_time = time.perf_counter() - t0
 
             # -------------------------------------------------
             # Response Formatter
@@ -203,17 +139,14 @@ def main():
 
             t0 = time.perf_counter()
 
-            reply = response_formatter.format(
-                result,
-                command
-            )
+            reply = response_formatter.format(result, command)
 
             formatter_time = time.perf_counter() - t0
 
-            print("\nGenesis :", reply)
+            print("\nAssistant:", reply)
 
             # -------------------------------------------------
-            # Piper
+            # Piper TTS
             # -------------------------------------------------
 
             t0 = time.perf_counter()
@@ -222,43 +155,45 @@ def main():
 
             tts_time = time.perf_counter() - t0
 
+            total_time = time.perf_counter() - total_start
+
             # -------------------------------------------------
             # Pipeline Statistics
             # -------------------------------------------------
 
-            total_pipeline = (
-                time.perf_counter()
-                - pipeline_start
-            )
+            print("\n" + "=" * 70)
+            print("PIPELINE STATISTICS")
+            print("=" * 70)
 
-            pipeline_stats = {
-                "record": record_time,
-                "whisper": whisper_time,
-                "mission_get": mission_get_time,
-                "prompt": prompt_time,
-                "llm": llm_time,
-                "mission_process": mission_process_time,
-                "formatter": formatter_time,
-                "tts": tts_time,
-                "total": total_pipeline,
-            }
+            print(f"Recording            : {record_time:8.3f} sec")
+            print(f"Whisper STT          : {whisper_time:8.3f} sec")
+            print(f"Mission Cache Read   : {cache_time:8.3f} sec")
+            print(f"Prompt Builder       : {prompt_time:8.3f} sec")
+            print(f"Qwen Inference       : {qwen_time:8.3f} sec")
+            print(f"Mission Processing   : {mission_time:8.3f} sec")
+            print(f"Response Formatter   : {formatter_time:8.3f} sec")
+            print(f"Piper TTS            : {tts_time:8.3f} sec")
 
-            print_pipeline_stats(pipeline_stats)
+            print("-" * 70)
+            print(f"TOTAL PIPELINE       : {total_time:8.3f} sec")
+            print("-" * 70)
 
-        except KeyboardInterrupt:
+            print(f"Transcript           : {transcript}")
+            print(f"Intent               : {command['intent']}")
+            print(f"Field                : {command.get('field', '-')}")
+            print(f"Target               : {command.get('target', '-')}")
+            print("=" * 70)
 
-            print("\nExiting Genesis.")
+            interaction += 1
 
-            break
+    except KeyboardInterrupt:
 
-        except Exception as e:
+        print("\nShutting down...")
 
-            print("\nERROR")
-            print(e)
+        mission_cache.clear()
 
+        print("Mission cache cleared.")
 
-# =========================================================
 
 if __name__ == "__main__":
-
     main()
